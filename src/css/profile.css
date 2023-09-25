@@ -1,0 +1,89 @@
+.profile-page {
+    font-family: Arial, sans-serif;
+    padding: 20px;
+    background-color: #f5f5f5;
+    color: #333;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.profile-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    background-color: #2c3e50;
+    color: #fff;
+    border-radius: 10px;
+    width: 100%;
+}
+
+
+.profile-header, 
+.user-posts {
+    width: 100%;
+    max-width: 600px;
+}
+
+.profile-pic {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    margin-bottom: 20px;
+    object-fit: cover;
+}
+
+.edit-icon {
+    background-color: rgba(255, 255, 255, 0.7);
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    margin-left: 10px;
+    cursor: pointer;
+}
+
+h1, h2, p {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.follow-info {
+    display: flex;
+    justify-content: space-around;
+    width: 100%;
+    margin-top: 20px;
+}
+
+.user-posts {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.post-image {
+    width: 100%;
+    height: 200px;  /* Set a fixed height. Adjust as required. */
+    object-fit: cover;  /* This will ensure the image fills the box without distorting. */
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.fas.fa-edit {
+    font-size: 20px;      /* Adjust size */
+    color: #007bff;       /* Adjust color */
+    cursor: pointer;      /* Change cursor on hover to indicate clickability */
+    margin-left: 8px;     /* Space from adjacent elements */
+    transition: color 0.3s; /* Smooth color transition on hover for a subtle effect */
+}
+
+/* Optional: Change color on hover */
+.fas.fa-edit:hover {
+    color: #0056b3;
+}

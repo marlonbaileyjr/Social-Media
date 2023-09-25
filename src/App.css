@@ -36,3 +36,22 @@
     transform: rotate(360deg);
   }
 }
+
+/* App.css or a similar global CSS file */
+
+.upload-page {
+  max-width: 600px;
+  margin: 50px auto;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.upload-page img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 20px auto;
+}

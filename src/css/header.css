@@ -1,0 +1,54 @@
+.sticky-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    background-color: #fff; /* or any other color */
+    padding: 10px 20px;
+    box-shadow: 0px 3px 10px rgba(0, 0, 0, 0.1); /* optional shadow for depth */
+    z-index: 1000; /* to ensure it stays on top of other content */
+  }
+  
+  .logo {
+    font-weight: bold;
+    font-size: 24px;
+  }
+  
+  .searchbar {
+    flex-grow: 1;   /* Reduced from 2 to give it less growth */
+    width: 60%;     /* Explicit width for the search bar */
+    max-width: 300px; /* Maximum width to ensure it doesn't grow too large */
+    padding: 5px 8px; /* Reduced padding */
+    margin: 0 10px; /* Optional margin to keep some spacing */
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    outline: none;
+  }
+  
+  
+  .profile-actions {
+    display: flex;
+    align-items: center;
+  }
+  
+  .add-post-btn {
+    margin-right: 10px;
+    padding: 8px 12px;
+    border: none;
+    border-radius: 4px;
+    background-color: #2c3e50; /* or any other color */
+    color: #fff;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .add-post-btn:hover {
+    background-color: #2c3e90;
+  }
+  
+  .profile-icon {
+    font-size: 24px;
+    cursor: pointer;
+  }
+  

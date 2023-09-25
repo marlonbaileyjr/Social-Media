@@ -1,0 +1,56 @@
+.scroll-container {
+  overflow-y: hidden; /* Hide overflow to show only one item */
+  height: 100vh;
+  width: 100%;
+  display: flex; 
+  align-items: center; /* Center items vertically */
+  justify-content: center; /* Center items horizontally */
+}
+
+.scroll-item {
+  display: none; /* Hide all items by default */
+  text-align: center;
+  transition: transform 0.3s ease-out;
+  transition: transform 0.3s ease-out;
+}
+
+.scroll-item.active {
+  display: block; /* Show only the active item */
+}
+
+.scroll-item img {
+  width: 300px;  /* Set your desired width */
+  height: 400px; /* Set your desired height */
+  object-fit: contain; /* Ensures that the entire image is visible */
+  margin: 0 auto;    /* Center images horizontally */
+}
+
+.scroll-container {
+  position: relative; /* To position the buttons absolutely relative to the container */
+  /* ... rest of the styles */
+}
+
+.prev-button, .next-button {
+  position: absolute;  /* Position the buttons on top of the image */
+  top: 50%;            /* Center them vertically */
+  transform: translateY(-50%); /* A trick to perfectly center them */
+  padding: 10px 20px;
+  background-color: rgba(0, 0, 0, 0.7); /* Semi-transparent black */
+  color: white;
+  border: none;
+  cursor: pointer;
+  opacity: 0.7;
+  transition: opacity 0.3s;
+}
+
+.prev-button:hover, .next-button:hover {
+  opacity: 1; /* Make them more visible on hover */
+}
+
+.prev-button {
+  left: 10px; /* Position it on the left */
+}
+
+.next-button {
+  right: 10px; /* Position it on the right */
+}
