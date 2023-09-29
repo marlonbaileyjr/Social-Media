@@ -1,0 +1,268 @@
+{"social_media":[
+    {
+    "users": [
+      {
+        "userId": 1,
+        "firstName": "John",
+        "lastName": "Doe",
+        "userName": "johndoe123",
+        "email": "johndoe@example.com",
+        "bio": "An adventurous spirit.",
+        "password": "password123",
+        "dateOfBirth": "1990-01-01",
+        "dateJoined": "2023-09-01",
+        "profilePicture": null
+      },
+      {
+        "userId": 2,
+        "firstName": "Jane",
+        "lastName": "Smith",
+        "userName": "janesmith456",
+        "email": "jane.smith@example.com",
+        "bio": "Love to read and travel.",
+        "password": "securePass456",
+        "dateOfBirth": "1985-02-15",
+        "dateJoined": "2023-05-10",
+        "profilePicture": null
+      },
+      {
+        "userId": 3,
+        "firstName": "Alice",
+        "lastName": "Johnson",
+        "userName": "alicejohnson789",
+        "email": "alice.johnson@example.com",
+        "bio": "Photographer and coffee lover.",
+        "password": "photoPass789",
+        "dateOfBirth": "1992-07-20",
+        "dateJoined": "2023-08-15",
+        "profilePicture": null
+      },
+      {
+        "userId": 4,
+        "firstName": "Bob",
+        "lastName": "Martin",
+        "userName": "bobmartin012",
+        "email": "bob.martin@example.com",
+        "bio": "Music is life.",
+        "password": "musicLife012",
+        "dateOfBirth": "1988-03-30",
+        "dateJoined": "2023-06-20",
+        "profilePicture": null
+      },
+      {
+        "userId": 5,
+        "firstName": "Charlie",
+        "lastName": "Brown",
+        "userName": "charliebrown345",
+        "email": "charlie.brown@example.com",
+        "bio": "Always seeking the next adventure.",
+        "password": "adventurePass345",
+        "dateOfBirth": "1995-09-25",
+        "dateJoined": "2023-07-10",
+        "profilePicture": null
+      }
+    ]
+},
+  
+
+{
+    "friendships": [
+      {
+        "friendshipId": 1,
+        "follower": 1,
+        "followed": 2,
+        "uploadTime": "2023-09-29T12:00:00Z"  
+      },
+      {
+        "friendshipId": 2,
+        "follower": 3,
+        "followed": 4,
+        "uploadTime": "2023-09-29T12:05:00Z"  
+      },
+      {
+        "friendshipId": 3,
+        "follower": 5,
+        "followed": 3,
+        "uploadTime": "2023-09-29T12:10:00Z"  
+      },
+      {
+        "friendshipId": 4,
+        "follower": 2,
+        "followed": 5,
+        "uploadTime": "2023-09-29T12:15:00Z"  
+      },
+      {
+        "friendshipId": 5,
+        "follower": 4,
+        "followed": 1,
+        "uploadTime": "2023-09-29T12:20:00Z"  
+      }
+    ]
+  },
+  
+
+  {
+    "posts": [
+      {
+        "postId": 1,
+        "caption": "John's latest adventure",
+        "userId": 1,
+        "uploadTime": "2023-09-29T12:00:00Z"  
+      },
+      {
+        "postId": 2,
+        "caption": "Jane's favorite book recommendations",
+        "userId": 2,
+        "uploadTime": "2023-09-29T12:30:00Z"  
+      },
+      {
+        "postId": 3,
+        "caption": "Alice's day out in the city",
+        "userId": 3,
+        "uploadTime": "2023-09-29T13:00:00Z"  
+      },
+      {
+        "postId": 4,
+        "caption": "Bob's new music playlist",
+        "userId": 4,
+        "uploadTime": "2023-09-29T13:30:00Z"  
+      },
+      {
+        "postId": 5,
+        "caption": "Charlie's trip to the mountains",
+        "userId": 5,
+        "uploadTime": "2023-09-29T14:00:00Z" 
+      }
+    ]
+  },
+  
+  
+  {
+    "pictures": [
+      {
+        "pictureId": 1,
+        "postId": 1,
+        "type": "image",
+        "order": 1,
+        "media": null,
+        "uploadTime": "2023-09-29T00:00:00Z" 
+      },
+      {
+        "pictureId": 2,
+        "postId": 2,
+        "type": "image",
+        "order": 1,
+        "media": null,
+        "uploadTime": "2023-09-29T00:00:00Z"
+      },
+      {
+        "pictureId": 3,
+        "postId": 2,
+        "type": "video",
+        "order": 2,
+        "media": null,
+        "uploadTime": "2023-09-29T00:00:00Z"
+      },
+      {
+        "pictureId": 4,
+        "postId": 3,
+        "type": "image",
+        "order": 1,
+        "media": null,
+        "uploadTime": "2023-09-29T00:00:00Z"
+      },
+      {
+        "pictureId": 5,
+        "postId": 4,
+        "type": "image",
+        "order": 1,
+        "media": null,
+        "uploadTime": "2023-09-29T00:00:00Z"
+      }
+    ]
+  },
+  
+
+  {
+    "comments": [
+      {
+        "commentId": 1,
+        "postId": 1,
+        "userId": 1,
+        "text": "Thank you all for the likes!",
+        "parentCommentId": null,
+        "uploadTime": "2023-09-29 10:10:00"
+      },
+      {
+        "commentId": 2,
+        "postId": 1,
+        "userId": 2,
+        "text": "Great post, John!",
+        "parentCommentId": null,
+        "uploadTime": "2023-09-29 10:15:00"
+      },
+      {
+        "commentId": 3,
+        "postId": 1,
+        "userId": 3,
+        "text": "I agree with Jane!",
+        "parentCommentId": 2,
+        "uploadTime": "2023-09-29 10:20:00"
+      },
+      {
+        "commentId": 4,
+        "postId": 3,
+        "userId": 4,
+        "text": "Wonderful day out, Alice!",
+        "parentCommentId": null,
+        "uploadTime": "2023-09-29 10:25:00"
+      },
+      {
+        "commentId": 5,
+        "postId": 4,
+        "userId": 5,
+        "text": "Love the music choice, Bob!",
+        "parentCommentId": null,
+        "uploadTime": "2023-09-29 10:30:00"
+      }
+    ]
+  },
+  
+  
+  {
+    "likes": [
+      {
+        "likeId": 1,
+        "userId": 1,
+        "postId": 3,
+        "uploadTime": "2023-09-29T12:00:00Z"
+      },
+      {
+        "likeId": 2,
+        "userId": 2,
+        "postId": 4,
+        "uploadTime": "2023-09-29T12:10:00Z" 
+      },
+      {
+        "likeId": 3,
+        "userId": 3,
+        "postId": 5,
+        "uploadTime": "2023-09-29T12:20:00Z" 
+      },
+      {
+        "likeId": 4,
+        "userId": 4,
+        "postId": 1,
+        "uploadTime": "2023-09-29T12:30:00Z" 
+      },
+      {
+        "likeId": 5,
+        "userId": 5,
+        "postId": 2,
+        "uploadTime": "2023-09-29T12:40:00Z" 
+      }
+    ]
+  }
+]
+}  
+  
