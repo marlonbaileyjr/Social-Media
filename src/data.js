@@ -1,20 +1,198 @@
 import img1 from './img/download.png'
 import img2 from './img/test.png'
 import img3 from './img/test1.jpeg'
-import img4 from './img/w3kr4m2fi3111.png'
+//import img4 from './img/w3kr4m2fi3111.png'
 import post1 from './img/pos1.jpeg'
 import post2 from './img/post2.jpeg'
 import post3 from './img/post3.jpeg'
 import post4 from './img/post4.jpeg'
 import post5 from './img/post5.jpeg'
+
 export const items = [
-    { imageUrl: img1, caption: 'Caption for Image 1',user: 'Madeline123' },
-    { imageUrl: img2, caption: 'Caption for Image 2',user: 'Moses233' },
+    {
+        "post": {
+          "postId": 1,
+          "caption": "John's latest adventure",
+          "userId": 1,
+          "uploadTime": "2023-09-29T12:00:00Z"
+        },
+        "comments": [
+          {
+            "commentId": 1,
+            "postId": 1,
+            "userId": 1,
+            "text": "Thank you all for the likes!",
+            "parentCommentId": null,
+            "uploadTime": "2023-09-29 10:10:00"
+          },
+          {
+            "commentId": 2,
+            "postId": 1,
+            "userId": 2,
+            "text": "Great post, John!",
+            "parentCommentId": null,
+            "uploadTime": "2023-09-29 10:15:00"
+          },
+          {
+            "commentId": 3,
+            "postId": 1,
+            "userId": 3,
+            "text": "I agree with Jane!",
+            "parentCommentId": 2,
+            "uploadTime": "2023-09-29 10:20:00"
+          }
+        ],
+        "pictures": [
+          {
+            "pictureId": 1,
+            "postId": 1,
+            "type": "image",
+            "order": 1,
+            "media": img1,
+            "uploadTime": "2023-09-29T00:00:00Z"
+          }
+        ],
+        "likes": [
+          {
+            "likeId": 4,
+            "userId": 4,
+            "postId": 1,
+            "uploadTime": "2023-09-29T12:30:00Z"
+          }
+        ]
+      }
+      ,
+      {
+        "post": {
+          "postId": 2,
+          "caption": "Jane's favorite book recommendations",
+          "userId": 2,
+          "uploadTime": "2023-09-29T12:30:00Z"
+        },
+        "comments": [],
+        "pictures": [
+          {
+            "pictureId": 2,
+            "postId": 2,
+            "type": "image",
+            "order": 1,
+            "media": img2,
+            "uploadTime": "2023-09-29T00:00:00Z"
+          },
+          {
+            "pictureId": 3,
+            "postId": 2,
+            "type": "video",
+            "order": 2,
+            "media": img3,
+            "uploadTime": "2023-09-29T00:00:00Z"
+          }
+        ],
+        "likes": [
+          {
+            "likeId": 5,
+            "userId": 5,
+            "postId": 2,
+            "uploadTime": "2023-09-29T12:40:00Z"
+          }
+        ]
+      }
   ];
   
 export const items2 = [
-    { imageUrl: img3, caption: 'Caption for Image 1',user: 'Jixny332' },
-    { imageUrl: img4, caption: 'Caption for Image 2',user: 'lly_23' },
+    {
+        "post": {
+          "postId": 3,
+          "caption": "Alice's day out in the city",
+          "userId": 3,
+          "uploadTime": "2023-09-29T13:00:00Z"
+        },
+        "comments": [
+          {
+            "commentId": 4,
+            "postId": 3,
+            "userId": 4,
+            "text": "Wonderful day out, Alice!",
+            "parentCommentId": null,
+            "uploadTime": "2023-09-29 10:25:00"
+          }
+        ],
+        "pictures": [
+          {
+            "pictureId": 4,
+            "postId": 3,
+            "type": "image",
+            "order": 1,
+            "media": post1,
+            "uploadTime": "2023-09-29T00:00:00Z"
+          }
+        ],
+        "likes": [
+          {
+            "likeId": 1,
+            "userId": 1,
+            "postId": 3,
+            "uploadTime": "2023-09-29T12:00:00Z"
+          }
+        ]
+      }
+      ,
+      {
+        "post": {
+          "postId": 4,
+          "caption": "Bob's new music playlist",
+          "userId": 4,
+          "uploadTime": "2023-09-29T13:30:00Z"
+        },
+        "comments": [
+          {
+            "commentId": 5,
+            "postId": 4,
+            "userId": 5,
+            "text": "Love the music choice, Bob!",
+            "parentCommentId": null,
+            "uploadTime": "2023-09-29 10:30:00"
+          }
+        ],
+        "pictures": [
+          {
+            "pictureId": 5,
+            "postId": 4,
+            "type": "image",
+            "order": 1,
+            "media": post2,
+            "uploadTime": "2023-09-29T00:00:00Z"
+          }
+        ],
+        "likes": [
+          {
+            "likeId": 2,
+            "userId": 2,
+            "postId": 4,
+            "uploadTime": "2023-09-29T12:10:00Z"
+          }
+        ]
+      }
+      ,
+      {
+        "post": {
+          "postId": 5,
+          "caption": "Charlie's trip to the mountains",
+          "userId": 5,
+          "uploadTime": "2023-09-29T14:00:00Z"
+        },
+        "comments": [],
+        "pictures": [],
+        "likes": [
+          {
+            "likeId": 3,
+            "userId": 3,
+            "postId": 5,
+            "uploadTime": "2023-09-29T12:20:00Z"
+          }
+        ]
+      }
+      ,
   ];
 
 export const postsWithPictures = [

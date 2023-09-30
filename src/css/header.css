@@ -1,54 +1,113 @@
+
 .sticky-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    position: sticky;
-    top: 0;
-    background-color: #fff; /* or any other color */
-    padding: 10px 20px;
-    box-shadow: 0px 3px 10px rgba(0, 0, 0, 0.1); /* optional shadow for depth */
-    z-index: 1000; /* to ensure it stays on top of other content */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  background-color: #fff;
+  padding: 10px 20px;
+  box-shadow: 0px 3px 10px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+}
+
+.logo {
+  font-weight: bold;
+  font-size: 24px;
+}
+
+.searchbar {
+  flex-grow: 1;
+  width: 100%;
+  max-width: 300px;
+  padding: 5px 8px;
+  margin: 0 10px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  outline: none;
+}
+
+.profile-actions {
+  display: flex;
+  align-items: center;
+}
+
+.add-post-btn {
+  margin-right: 10px;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 4px;
+  background-color: #2c3e50;
+  color: #fff;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.add-post-btn:hover {
+  background-color: #2c3e90;
+}
+
+.profile-icon {
+  font-size: 24px;
+  cursor: pointer;
+}
+
+@media (max-width: 768px) {
+  .sticky-header {
+    flex-direction: column; 
+    padding: 10px;
   }
-  
+
   .logo {
-    font-weight: bold;
-    font-size: 24px;
+    margin-bottom: 10px;
   }
-  
+
   .searchbar {
-    flex-grow: 1;   /* Reduced from 2 to give it less growth */
-    width: 60%;     /* Explicit width for the search bar */
-    max-width: 300px; /* Maximum width to ensure it doesn't grow too large */
-    padding: 5px 8px; /* Reduced padding */
-    margin: 0 10px; /* Optional margin to keep some spacing */
-    border-radius: 4px;
-    border: 1px solid #ccc;
-    outline: none;
+    margin: 10px 0; 
   }
-  
-  
+
   .profile-actions {
-    display: flex;
-    align-items: center;
+    margin-top: 10px; 
   }
-  
+
   .add-post-btn {
-    margin-right: 10px;
-    padding: 8px 12px;
-    border: none;
-    border-radius: 4px;
-    background-color: #2c3e50; /* or any other color */
-    color: #fff;
-    cursor: pointer;
-    transition: background-color 0.3s;
+    margin-right: 0; 
   }
-  
-  .add-post-btn:hover {
-    background-color: #2c3e90;
-  }
-  
-  .profile-icon {
-    font-size: 24px;
-    cursor: pointer;
-  }
-  
+}
+
+.profile-menu {
+  position: fixed;
+  top: 0;
+  right: -100%;
+  width: 300px; /* Set the menu width */
+  height: 100%;
+  background-color: #fff;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+  transition: right 0.3s ease-in-out;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.menu-header {
+  padding: 20px 0;
+  position: relative;
+}
+
+.close-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+.menu-item {
+  margin: 10px 0;
+  cursor: pointer;
+}
+.profile-menu.visible {
+  right: 0;
+}

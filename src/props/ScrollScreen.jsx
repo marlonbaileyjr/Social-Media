@@ -1,14 +1,12 @@
 import React, { useState } from 'react';
 import '../css/ScrollScreen.css';
+import Post from './post';
+import getUserById from '../functions/getUser'
 
-function ScrollScreen({ items }) {
-  const [activeIndex, setActiveIndex] = useState(0); // Current active item
+function ScrollScreen({ items, user }) {
+    const [activeIndex, setActiveIndex] = useState(0);
   const [startY, setStartY] = useState(null);
   const [isDragging, setIsDragging] = useState(false);
-
-  const preventDragHandler = (e) => {
-    e.preventDefault();
-  };
 
   const handleTouchStart = (e) => {
     setStartY(e.touches[0].clientY);
@@ -78,27 +76,23 @@ function ScrollScreen({ items }) {
 
   return (
     <div 
-      className="scroll-container"
-      onMouseDown={handleMouseDown}
-      onMouseMove={handleMouseMove}
-      onMouseUp={handleMouseUp}
-      onTouchStart={handleTouchStart}
-      onTouchEnd={handleTouchEnd}
+        className="scroll-container"
+        onMouseDown={handleMouseDown}
+        onMouseMove={handleMouseMove}
+        onMouseUp={handleMouseUp}
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
     >
-      {items.map((item, index) => (
-        <div key={index} className={`scroll-item ${index === activeIndex ? 'active' : ''}`}>
-          <img 
-            src={item.imageUrl} 
-            alt={item.caption} 
-            onDragStart={preventDragHandler} // Add this event handler
-          />
-          <p>{item.caption}</p>
-        </div>
-      ))}
-      <button className="prev-button" onClick={prevItem}>Previous</button>
-      <button className="next-button" onClick={nextItem}>Next</button>
+        {items.map((item, index) => (
+          
+            <div key={index} className={`scroll-item ${index === activeIndex ? 'active' : ''}`}>
+                <Post post={item.post} pictures={item.pictures} comments={item.comments} user={getUserById(item.post.userId)} />
+            </div>
+        ))}
+        <button className="prev-button" onClick={prevItem}>Previous</button>
+        <button className="next-button" onClick={nextItem}>Next</button>
     </div>
-  );
+);
 }
 
 
