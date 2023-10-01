@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import Slider from 'react-slick';
 import '../css/post.css';
+import { useNavigate } from 'react-router-dom';
 
 class Comment {
     constructor(commentData) {
@@ -15,8 +16,16 @@ class Comment {
     }
   }
 
+
+  
+
   function Post({ post, comments, pictures, user }) {
+    const navigate = useNavigate();
     const [showComments, setShowComments] = useState(false);
+
+    const navigateToProfile = (userid)=> {
+      navigate(`/profile/${userid}`);
+    }
   
     const settings = {
       dots: true,
@@ -28,7 +37,7 @@ class Comment {
   
     return (
       <div className="post-container">
-        <div className="profile-bar">
+        <div className="profile-bar" onClick={() => navigateToProfile(user.userId)}>
         {user && user.profilePicture && (
           <img
             src={user.profilePicture}

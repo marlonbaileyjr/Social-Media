@@ -35,6 +35,12 @@ function Header() {
       <div className="logo" onClick={navigateToMain}>
         MyLogo
       </div>
+      <div className={`menu-icon ${menuVisible ? 'open' : ''}`} onClick={toggleMenu}>
+        <i className="fa fa-bars"></i>
+      </div>
+      <div className="searchbar-div">
+        <input type="text" placeholder="Search..." className="searchbar" />
+      </div>
       <div className={`profile-menu ${menuVisible ? 'visible' : ''}`}>
         <div className="menu-header">
           <span className="close-button" onClick={toggleMenu}>
@@ -42,6 +48,9 @@ function Header() {
           </span>
         </div>
         <div className="menu-content">
+          <div className="menu-item" onClick={navigateToProfile}>
+            <i className="fas fa-user"></i> View Profile
+          </div>
           <div className="menu-item" onClick={logOut}>
             <i className="fas fa-sign-out-alt"></i> Sign Out
           </div>
@@ -49,9 +58,6 @@ function Header() {
             <i className="fas fa-plus"></i> Add Post
           </div>
         </div>
-      </div>
-      <div className="profile-icon" onClick={toggleMenu}>
-        👤
       </div>
     </header>
   );
