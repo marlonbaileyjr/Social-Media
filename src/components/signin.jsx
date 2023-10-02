@@ -2,23 +2,29 @@ import React, { useState, useContext } from 'react';
 import { Link } from 'react-router-dom';
 import { UserContext } from '../userContext'; // Import your UserContext
 import '../css/signin.css';
+import {SignInUser} from '../functions/userFunctions.jsx'
 
 function SignIn() {
-  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const { loggedin, setLoggedin, setUserID } = useContext(UserContext);
-  const handleSignIn = () => {
+  const {setLoggedin, setUserID } = useContext(UserContext);
+  
+  const handleSignIn = async () => {
+    const success = await SignInUser(username, password); // Call the signin function
 
-    setLoggedin(true);
-    setUserID(1)
+    if (success) {
+      setLoggedin(true);
+      setUserID(1);
+      console.log('Signin successful');
+    } else {
+      // Signin failed, you can display an error message
+      console.error('Signin failed');
+    }
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    handleSignIn(); // Call the handleSignIn function when the form is submitted
-    console.log('Email:', email);
-    console.log('Password:', password);
-    console.log(loggedin)
+    handleSignIn();
   };
 
   return (
@@ -26,12 +32,12 @@ function SignIn() {
         <h2>Sign In</h2>
         <form onSubmit={handleSubmit} className="sign-in-form">
             <div className="input-group">
-                <label htmlFor="email">Email:</label>
+                <label htmlFor="email">Username:</label>
                 <input
-                    type="email"
-                    id="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    type="text"
+                    id="text"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
                     required
                 />
             </div>

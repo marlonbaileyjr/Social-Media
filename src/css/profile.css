@@ -87,3 +87,46 @@ h1, h2, p {
 .fas.fa-edit:hover {
     color: #0056b3;
 }
+
+/* Overlapping everything with a dark semi-transparent background */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.7); /* Black with 70% opacity */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000; /* Ensure it's above everything else */
+  }
+  
+  /* Modal styling */
+  .modal {
+    position: relative;
+    width: 60%; /* Can adjust to your needs */
+    max-width: 500px; /* Can adjust to your needs */
+    background-color: white;
+    padding: 5px;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Soft shadow around the modal */
+  }
+  
+  /* Close button styling */
+  .modal .close-button {
+    position: absolute;
+    right: 15px;
+    top: 10px;
+    border: none;
+    background: transparent;
+    font-size: 24px;
+    line-height: 1;
+    cursor: pointer;
+    color: #666; /* Gray color */
+  }
+  
+  .modal .close-button:hover {
+    color: #333; /* Darker gray when hovered */
+  }
+  

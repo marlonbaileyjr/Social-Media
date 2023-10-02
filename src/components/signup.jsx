@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import {SignUpUser} from '../functions/userFunctions.jsx'
 
 function SignUp() {
   const [firstName, setFirstName] = useState('');
@@ -9,16 +10,19 @@ function SignUp() {
   const [password, setPassword] = useState('');
   const [dob, setDob] = useState(''); // Date of Birth
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('First Name:', firstName);
-    console.log('Last Name:', lastName);
-    console.log('Username:', username);
-    console.log('Email:', email);
-    console.log('Password:', password);
-    console.log('Date of Birth:', dob);
     
-    // Add your API call to backend for user registration here
+    // Call the SignUp function here
+    const success = await SignUpUser(firstName, lastName, username, email, password, dob);
+
+    if (success) {
+      // Registration was successful, you can redirect the user or show a success message
+      console.log('Registration successful');
+    } else {
+      // Registration failed, you can display an error message
+      console.error('Registration failed');
+    }
   };
 
   return (

@@ -3,45 +3,84 @@ import '../css/profile.css';
 import { useParams } from 'react-router-dom';
 import noImg from '../img/NOIMG.jpeg'
 import { UserContext } from '../userContext';
-import getPostById from '../functions/getUserPost'; // Import the getPostById function
-import getUserById from '../functions/getUser';
+import {getPostById, getPicturesFromPost, getPostByPostId} from '../functions/postFunctions'; 
+import {getUserById} from '../functions/userFunctions';
+import { getFollowed, getFollowers, addFriendship, deleteFriendship } from '../functions/friendshipFunctions'
+import Post from '../props/post';
 
 function ProfilePage(props) {
   const { userID: contextUserId } = useContext(UserContext);
   const { USER_ID: paramUserId } = useParams();
 
   const [user, setUser] = useState(null);
-  const [userPosts, setUserPosts] = useState([]); // State to store user's posts
+  const [userPosts, setUserPosts] = useState([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedPost, setSelectedPost] = useState(null);
+  const [followersCount, setFollowersCount] = useState(0);
+  const [followedCount, setFollowedCount] = useState(0);
+  const [isFollowing, setIsFollowing] = useState(false);
+
 
   const canEdit = Number(paramUserId) === contextUserId;
 
   useEffect(() => {
-    // Fetch user data when the component mounts
     const userData = getUserById(Number(paramUserId));
-    if (userData) {
-      setUser(userData);
-  
-      // Fetch user's posts by userId using getPostById function
-      const userPostsData = getPostById(Number(paramUserId));  
-      if (userPostsData && userPostsData.pictures && userPostsData.pictures.length > 0) {
-        const firstImage = userPostsData.pictures.find(
-          (picture) => picture.type === 'image'
-        );
-          if (firstImage) {
-            console.log('fimg', firstImage)
-          setUserPosts([firstImage]);
-        } else {
-          const NoImage={pictureId:null, postId: userPostsData.postId, type: 'image', order: 1, media: noImg}
-          setUserPosts([NoImage]);
-        }
-      } else {
-        const NoImage={pictureId:null, postId: userPostsData.postId, type: 'image', order: 1, media: noImg}
-        setUserPosts([NoImage]);      }
+    setUser(userData);
+
+    const userPostsData = getPostById(Number(paramUserId));  
+    if (userPostsData) {
+      setUserPosts(getPicturesFromPost(userPostsData.post.postId));
     }
+
+    // Fetch followers count
+    const fetchFollowers = async () => {
+      const followers = await getFollowers(Number(paramUserId));
+      setFollowersCount(followers.length);
+    };
+
+    // Fetch followed count
+    const fetchFollowed = async () => {
+      const followed = await getFollowed(Number(paramUserId));
+      setFollowedCount(followed.length);
+    };
+    const checkFollowingStatus = async () => {
+      const followers = await getFollowers(Number(paramUserId));
+      const isUserFollowing = followers.some(follower => follower.userId === contextUserId);
+      setIsFollowing(isUserFollowing);
+    };
+    
+    checkFollowingStatus();
+    fetchFollowers();
+    fetchFollowed();
+
   }, [paramUserId, contextUserId]);
-  
-  
-  
+
+  const handleFollow = async () => {
+    await addFriendship(contextUserId, Number(paramUserId));
+    setIsFollowing(true);
+    // Optionally: Update followers count after following
+    const updatedFollowers = await getFollowers(Number(paramUserId));
+    setFollowersCount(updatedFollowers.length);
+  };
+
+  const handleUnfollow = async () => {
+    await deleteFriendship(contextUserId, Number(paramUserId));
+    setIsFollowing(false);
+    // Optionally: Update followers count after unfollowing
+    const updatedFollowers = await getFollowers(Number(paramUserId));
+    setFollowersCount(updatedFollowers.length);
+  };
+
+  function handlePostClick(post) {
+    setSelectedPost(post);
+    setIsModalOpen(true);
+}
+
+
+  function closeModal() {
+    setIsModalOpen(false);
+  }
+
   if (!user) {
     return <div>Loading...</div>;
   }
@@ -61,21 +100,70 @@ function ProfilePage(props) {
           {user.bio} {canEdit && <i className="fas fa-edit"></i>}
         </p>
         <div className="follow-info">
-          <span>
-            <strong>{100}</strong> followers
-          </span>
-          <span>
-            <strong>{100}</strong> following
-          </span>
-        </div>
+        <span>
+          <strong>{followersCount}</strong> followers
+        </span>
+        <span>
+          <strong>{followedCount}</strong> following
+        </span>
+        {contextUserId !== Number(paramUserId) && (
+          isFollowing
+            ? <button onClick={handleUnfollow}>Unfollow</button>
+            : <button onClick={handleFollow}>Follow</button>
+        )}
+      </div>
     </div>
-      <div className="user-posts">
+    <div className="user-posts">
         {userPosts.map((post) => (
-          <img key={post.pictureId} src={post.media} alt="User post" className="post-image" />
+          <img 
+            key={post.pictureId} 
+            src={post.media || noImg} 
+            alt="User post" 
+            className="post-image" 
+            onClick={() => handlePostClick(post)}
+            />
         ))}
       </div>
+
+      {isModalOpen && (
+        <div className="modal-overlay">
+          <PostModal 
+            post={selectedPost} 
+            onClose={closeModal}
+          />
+
+        </div>
+      )}
     </div>
   );
 }
+
+function PostModal({ post, onClose }) {
+  const [postDetails, setPostDetails] = useState(null);
+
+  useEffect(() => {
+    const fetchPostDetails = async () => {
+      const postData = await getPostByPostId(post.postId);
+      setPostDetails(postData);
+    };
+    
+    fetchPostDetails();
+  }, [post.postId]);
+
+  console.log('postsSS',postDetails)
+
+  if (!postDetails) {
+    return <div>Loading...</div>;
+  }
+
+  return (
+    <div className="modal">
+      <button className="close-button" onClick={onClose}>&times;</button>
+      <Post postId={post.postId} caption={postDetails.post.caption} userId={postDetails.post.userId}/>
+    </div>
+  );
+}
+
+
 
 export default ProfilePage;

@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
 import '../css/ScrollScreen.css';
 import Post from './post';
-import getUserById from '../functions/getUser'
 
-function ScrollScreen({ items, user }) {
-    const [activeIndex, setActiveIndex] = useState(0);
+function ScrollScreen({ items = [] }) { 
+  const [activeIndex, setActiveIndex] = useState(0);
   const [startY, setStartY] = useState(null);
   const [isDragging, setIsDragging] = useState(false);
 
@@ -59,7 +58,6 @@ function ScrollScreen({ items, user }) {
     const currentY = e.clientY;
     const diffY = startY - currentY;
 
-    // Set a threshold for detecting a "drag", e.g., 50 pixels
     if (diffY > 50 && activeIndex < items.length - 1) {
       setActiveIndex((prev) => prev + 1);
       setIsDragging(false);
@@ -69,9 +67,6 @@ function ScrollScreen({ items, user }) {
       setIsDragging(false);
       setStartY(null);
     }
-
-    if (!isDragging || startY === null) return;
-
   };
 
   return (
@@ -84,13 +79,13 @@ function ScrollScreen({ items, user }) {
         onTouchEnd={handleTouchEnd}
     >
         {items.map((item, index) => (
-          
-            <div key={index} className={`scroll-item ${index === activeIndex ? 'active' : ''}`}>
-                <Post post={item.post} pictures={item.pictures} comments={item.comments} user={getUserById(item.post.userId)} />
-            </div>
+          <div key={item.post.postId} className={`scroll-item ${index === activeIndex ? 'active' : ''}`}>
+              <Post postId={item.post.postId} caption={item.post.caption} userId={item.post.userId}/>
+          </div>
         ))}
-        <button className="prev-button" onClick={prevItem}>Previous</button>
-        <button className="next-button" onClick={nextItem}>Next</button>
+
+        {activeIndex > 0 && <button className="prev-button" onClick={prevItem}>Previous</button>}
+        {activeIndex < items.length - 1 && <button className="next-button" onClick={nextItem}>Next</button>}
     </div>
 );
 }
