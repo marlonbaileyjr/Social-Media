@@ -71,9 +71,14 @@ export const users = [
     return users.find(user => user.userId === userId);
   }
 
-function searchUser(userName) {
-  return users.find(user => user.userName === userName);
-}
+  function searchUser(input) {
+    return users.find(user => 
+      user.userName.toLowerCase().includes(input.toLowerCase()) ||
+      user.firstName.toLowerCase().includes(input.toLowerCase()) ||
+      user.lastName.toLowerCase().includes(input.toLowerCase())
+    );
+  }
+  
 
 function SignUpUser(firstName, lastName, userName, email, bio, password, dateOfBirth, profilePicture) {
   const newUser = {

@@ -1,9 +1,12 @@
 .post-container {
     position: relative;
-    width: 300px;
+    max-width: 300px; /* Changed from width to max-width for better responsiveness */
+    width: 100%; /* This ensures it takes full width on smaller screens */
     border: 1px solid #ddd;
     padding: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    margin: 0 auto; /* Centers the container if the viewport is bigger than 300px */
+    overflow: hidden;
 }
 
 .post-container .profile-bar {
@@ -11,24 +14,26 @@
     align-items: center;
     justify-content: flex-start;
     margin-bottom: 10px;
-  }
+    overflow: hidden;
+}
 
-  .post-container .profile-bar .user-profile-picture {
+.post-container .profile-bar .user-profile-picture {
     width: 40px;
     height: 40px; 
     border-radius: 50%; 
-    margin: 1px
-  }
+    margin: 1px;
+}
   
-  .post-container .profile-bar .user-username {
+.post-container .profile-bar .user-username {
     font-weight: bold;
     font-size: 16px;
     margin-left: 10px;
-  }
+}
 
 .post-container img {
-    width: 100%;
+    max-width: 100%;
     height: auto;
+    overflow: hidden;
 }
 
 .interaction-layer {
@@ -43,20 +48,20 @@
     cursor: pointer;
 }
 
-.comment-text {
+.comment-text,
+.first-comment-prompt {
     text-align: left;
-    padding-left: 10px; 
+    padding-left: 10px;
 }
 
 .first-comment-prompt {
-    text-align: left;
-    padding-left: 10px; 
     color: grey; 
 }
 
 .comments-dropdown {
     background-color: #fff;
     border-top: 1px solid #ddd;
+    overflow: hidden;
 }
 
 .comments-scroll-box {
@@ -69,7 +74,7 @@
     text-align: left;
     margin: 0;
     padding: 3px 0;
-  }
+}
   
 .comment-replies {
     margin-left: 20px;
@@ -78,27 +83,33 @@
 .toggle-icon {
     cursor: pointer;
     margin-left: 5px;
-  }
+}
 
 .toggle-icon.fa-chevron-up::before {
-content: "\f077"; 
+    content: "\f077"; 
 }
 
 .toggle-icon.fa-chevron-down::before {
     content: "\f078";
 }
   
-
 textarea {
     width: 100%;
     padding: 5px;
     resize: none;
 }
 
-
 @media only screen and (max-width: 600px) {
     .interaction-layer {
         padding: 4px 8px;
-        width: 90%; 
+    }
+
+    .post-container .profile-bar .user-username {
+        font-size: 14px; /* Reduced the font-size for smaller screens */
+    }
+
+    .post-container .profile-bar .user-profile-picture {
+        width: 30px; /* Reduced the image size for smaller screens */
+        height: 30px;
     }
 }
