@@ -1,6 +1,7 @@
 package com.example.lasya.SocialMediaApp.controller;
 
 import com.example.lasya.SocialMediaApp.bean.UserBean;
+import com.example.lasya.SocialMediaApp.exception.UserNotFoundException;
 import com.example.lasya.SocialMediaApp.service.UserService;
 import com.example.lasya.SocialMediaApp.service.UserServiceImpl;
 import io.swagger.annotations.ApiOperation;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.OptionalInt;
 
 @RestController
 public class UserController {
@@ -37,10 +39,9 @@ public class UserController {
             @ApiResponse(code = 500, message = "Internal Server Error"),
             @ApiResponse(code = 502, message = "Bad Gateway")
     })
-    @PostMapping(value = "/api/v1/users")
-    public ResponseEntity<UserBean> createUser(@RequestBody UserBean userBean) {
-        userBean = userService.createUser(userBean);
-        return new ResponseEntity<UserBean>(userBean, HttpStatus.CREATED);
+    @PostMapping(value = "/api/v1/users/signup")
+    public UserBean signUpUser(@RequestBody UserBean userBean){
+        return userService.signUpUser(userBean);
     }
 
     @ApiOperation(value = "This API is used to retrieve all users")
@@ -49,18 +50,16 @@ public class UserController {
         return new ResponseEntity<List<UserBean>>(userService.getAllUsers(), HttpStatus.OK);
     }
 
-    @ApiOperation(value = "This API is used to update a user")
-    @PutMapping(value = "/api/v1/users/{userId}")
-    public ResponseEntity<UserBean> updateUser(@PathVariable int userId,
-                                               @RequestBody UserBean userBean) {
-        return new ResponseEntity<UserBean>(userService.updateUser(userBean, userId), HttpStatus.OK);
-    }
-
     @ApiOperation(value = "This API is used to retrieve a user by specifying an id")
     @GetMapping(value = "/api/v1/users/{userId}")
-    public ResponseEntity<UserBean> getUserById(@PathVariable int userId) {
-        UserBean user = userService.getUserById(userId);
-        return new ResponseEntity<>(user, HttpStatus.OK);
+    public ResponseEntity<?> getUserById(@PathVariable int userId) {
+        try {
+            UserBean user = userService.getUserById(userId);
+            return ResponseEntity.ok(user);
+        } catch (UserNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("User not found for userId: " + userId);
+        }
     }
 
     @ApiOperation(value = "This API is used to delete a user by specifying an id")
@@ -76,17 +75,10 @@ public class UserController {
         List<UserBean> result = userService.searchUsers(searchText);
         logger.info("Search result size: {}", result.size());
         return result;
-//        return userService.searchUsers(searchText);
     }
 
-    @ApiOperation(value = "This API is used to sign up a user")
-    @PostMapping(value = "/api/v1/users/signup")
-    public UserBean signUpUser(@RequestBody UserBean userBean){
-        return userService.signUpUser(userBean);
-    }
-
-    @ApiOperation(value = "This API is used to signing in a user")
-    @PostMapping(value = "/api/v1/users/login")
+    @ApiOperation(value = "This API is used to sign in a user")
+    @PostMapping(value = "/api/v1/users/signin")
     public UserBean signInUser(@RequestBody Map<String, String> credentials){
         String username = credentials.get("userName");
         String password = credentials.get("password");
@@ -94,26 +86,30 @@ public class UserController {
     }
 
     @ApiOperation(value = "This API is used to update password field by providing the user email field")
-    @PostMapping(value = "/api/v1/users/updatePassword")
-    public UserBean updatePasswordByEmail(@PathVariable String email, @PathVariable String newPassword){
+    @PutMapping (value = "/api/v1/users/updatePassword")
+    public UserBean updatePasswordByEmail(@RequestBody Map<String, String> request) {
+        String email = request.get("email");
+        String newPassword = request.get("newPassword");
         return userService.updatePasswordByEmail(email, newPassword);
     }
-
     @ApiOperation(value = "This API is used to update username and bio fields by providing the user id field")
-    @PostMapping(value = "/api/v1/users/updateUsernameAndBio")
-    public UserBean updateUsernameAndBio(@PathVariable int userId, @PathVariable String newUsername, @PathVariable String newBio){
+    @PutMapping(value = "/api/v1/users/updateUsernameAndBio")
+    public UserBean updateUsernameAndBio(@RequestBody Map<String, Object> request) {
+        int userId = (int) request.get("userId");
+        String newUsername = (String) request.get("newUsername");
+        String newBio = (String) request.get("newBio");
         return userService.updateUsernameAndBio(userId, newUsername, newBio);
     }
 
     @ApiOperation(value = "This API is used to update profile picture field by providing the user id field")
-    @PostMapping(value = "/api/v1/users/updateProfilePicture")
+    @PutMapping(value = "/api/v1/users/updateProfilePicture")
     public UserBean updateProfilePicture(@PathVariable int userId, @PathVariable byte[] newProfilePicture){
         return userService.updateProfilePicture(userId, newProfilePicture);
     }
 
     @ApiOperation(value = "This API is used to update firstName and lastname fields by providing the user id field")
-    @PostMapping(value = "/api/v1/users/updateFirstNameAndLastName")
-    public UserBean updateFirstNameAndLastName(@RequestBody Map<String, Object> params){
+    @PutMapping(value = "/api/v1/users/updateFirstNameAndLastName")
+    public UserBean updateFirstNameAndLastName(@RequestBody Map<String, Object> params) {
         int userId = (int) params.get("userId");
         String newFirstName = (String) params.get("newFirstName");
         String newLastName = (String) params.get("newLastName");
@@ -121,9 +117,12 @@ public class UserController {
     }
 
     @ApiOperation(value = "This API is used to update bio field by providing the user id field")
-    @PostMapping(value = "/api/v1/users/updateBio")
-    public UserBean updateBio(int userId, String newBio){
-        return userService.updateBio(userId,newBio);
+    @PutMapping(value = "/api/v1/users/updateBio")
+    public UserBean updateBio(@RequestBody Map<String, Object> request) {
+        // Directly cast 'userId' to int
+        int userId = (int) request.get("userId");
+        String newBio = (String) request.get("newBio");
+        return userService.updateBio(userId, newBio);
     }
 
     @ApiOperation(value = "This API is used to retrieve all users using pagination")

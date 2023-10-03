@@ -1,6 +1,9 @@
 package com.example.lasya.SocialMediaApp.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import jakarta.persistence.*;
 import lombok.NonNull;
 import lombok.Data;
@@ -48,6 +51,7 @@ public class User {
     private Date dateOfBirth;
 
     @Column(name = "dateJoined",  nullable = false)
+    @JsonSerialize(using = CustomDateSerializer.class)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss.SSSSSS")
     private Date dateJoined;
 
@@ -58,6 +62,7 @@ public class User {
     private String userName;
 
     @Column(name = "lastLogin", nullable = false)
+    @JsonSerialize(using = CustomDateSerializer.class)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss.SSSSSS")
     private Date lastLogin;
 
@@ -68,6 +73,7 @@ public class User {
     }
 
     public Date getDateJoined() {
+        System.out.println("Getting dateJoined: " + dateJoined);
         return dateJoined;
     }
 
