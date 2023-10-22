@@ -10,15 +10,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.security.Timestamp;
 import java.sql.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
-public class PostServiceImpl implements PostService{
+public class PostServiceImpl implements PostService {
     private static final Logger logger = LoggerFactory.getLogger(PostServiceImpl.class);
     private final PostRepository postRepository;
     private final UserService userService;
@@ -32,7 +32,23 @@ public class PostServiceImpl implements PostService{
 
     @Override
     public PostBean updatePost(PostBean postBean, int postId) {
-        return null;
+        Optional<Post> optionalPost = postRepository.findById(postId);
+
+        if (optionalPost.isPresent()) {
+            Post post = optionalPost.get();
+            // Update the fields of the post entity with the values from postBean
+            post.setCaption(postBean.getCaption());
+            post.setUploadTime(postBean.getUploadTime());
+            int userId = postBean.getUserId(); // Get the userId from the postBean
+            post.setUser(new User(userId));
+            // Save the updated post entity
+            Post updatedPost = postRepository.save(post);
+            // Convert the updated post entity to a PostBean and return it
+            return getBeanFromEntity(updatedPost);
+        } else {
+            // Handle the case where the post with the given postId is not found
+            throw new PostNotFoundException("Post does not exist: " + postId);
+        }
     }
 
     @Override
@@ -66,8 +82,11 @@ public class PostServiceImpl implements PostService{
     }
 
     @Override
-    public List<Post> getPostsFromFriends(int userId) {
-        return postRepository.findPostsFromFriends(userId);
+    public List<Post> findPostsFromFriendsByUserId(int userId) {
+        logger.info("Querying for posts of user with userId: " + userId);
+        List<Post> posts = postRepository.findPostsFromFriendsByUserId(userId);
+        logger.info("Found " + posts.size() + " posts");
+        return posts;
     }
 
     @Override
@@ -76,8 +95,18 @@ public class PostServiceImpl implements PostService{
     }
 
     @Override
+    @Transactional
     public void addPost(String caption, Date uploadTime, UserBean user) {
-        postRepository.addPost(caption, (java.sql.Date) uploadTime, user.getUserId());
+        if (uploadTime == null) {
+            // Handle the case where uploadTime is null
+            throw new IllegalArgumentException("uploadTime cannot be null");
+        }
+        logger.info("Insert Data: caption={}, uploadTime={}, userId={}", caption, uploadTime, user.getUserId());
+        postRepository.addPost(caption, uploadTime, user.getUserId());
+    }
+
+    private java.sql.Date convertToSqlDate(Date date) {
+        return new java.sql.Date(date.getTime());
     }
 
     @Override

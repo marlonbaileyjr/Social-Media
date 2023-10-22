@@ -2,6 +2,8 @@ package com.example.lasya.SocialMediaApp.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
+
+import java.util.Date;
 import java.util.List;
 
 @Data
@@ -24,11 +26,12 @@ public class Post {
 
     private String caption;
 
-    @Column(name = "uploadTime")
+    @Temporal(TemporalType.DATE)
+    @Column(name = "upload_time")
     private java.sql.Date uploadTime;
 
     @ManyToOne
-    @JoinColumn(name = "userId")
+    @JoinColumn(name = "user_id")
     private User user;
 
     @OneToMany(mappedBy = "post")

@@ -1,16 +1,14 @@
 package com.example.lasya.SocialMediaApp.bean;
 
+import jakarta.annotation.Nonnull;
 import lombok.Data;
-import lombok.NonNull;
-import org.antlr.v4.runtime.misc.NotNull;
-
-import java.util.Date;
+import java.sql.Date;
 
 @Data
 public class PostBean {
     private int postId;
 
-    @NotNull
+    @Nonnull
     private String caption;
     private Date uploadTime;
 
@@ -20,5 +18,10 @@ public class PostBean {
     public void setUserId(int userId) {
         this.userId = userId;
     }
+
+    public PostBean() {
+        // constructor implementation
+    }
+
 
 }

@@ -3,7 +3,6 @@ package com.example.lasya.SocialMediaApp.controller;
 import com.example.lasya.SocialMediaApp.bean.UserBean;
 import com.example.lasya.SocialMediaApp.exception.UserNotFoundException;
 import com.example.lasya.SocialMediaApp.service.UserService;
-import com.example.lasya.SocialMediaApp.service.UserServiceImpl;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
@@ -16,7 +15,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
-import java.util.OptionalInt;
 
 @RestController
 public class UserController {

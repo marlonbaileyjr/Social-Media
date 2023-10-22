@@ -17,7 +17,7 @@ public interface PostService {
 
     public boolean deletePostById(int postId);
 
-    public List<Post> getPostsFromFriends(int userId);
+    public List<Post> findPostsFromFriendsByUserId(int userId);
 
     public List<byte[]> getMediaFromPost(int postId);
 
