@@ -1,5 +1,6 @@
 package com.example.lasya.SocialMediaApp.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -27,10 +28,12 @@ public class Comment {
 
     @ManyToOne
     @JoinColumn(name = "postId")
+    @JsonBackReference
     private Post post;
 
     @ManyToOne
     @JoinColumn(name = "userId")
+    @JsonBackReference
     private User user;
 
 }

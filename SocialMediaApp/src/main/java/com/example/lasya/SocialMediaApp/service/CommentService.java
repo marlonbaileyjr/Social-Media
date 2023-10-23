@@ -2,6 +2,7 @@ package com.example.lasya.SocialMediaApp.service;
 
 import com.example.lasya.SocialMediaApp.entity.Comment;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface CommentService {
@@ -12,6 +13,6 @@ public interface CommentService {
 
     void editComment(int commentId, String newText);
 
-    void addCommentToPost(int postId, String text);
+    void addCommentToPost(int postId, int userId, String text, Integer parentCommentId, LocalDateTime uploadTime);
 
 }

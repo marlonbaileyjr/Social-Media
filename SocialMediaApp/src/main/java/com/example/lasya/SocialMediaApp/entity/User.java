@@ -1,6 +1,7 @@
 package com.example.lasya.SocialMediaApp.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -85,6 +86,7 @@ public class User {
     private List<Friendship> friendships;
 
     @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
+    @JsonIgnore
     private List<Like> likes;
 
     @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)

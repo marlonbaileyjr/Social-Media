@@ -101,7 +101,7 @@ public class PostController {
 
     @ApiOperation(value = "This API is used to retrieve a post based on the postId")
     @GetMapping(value = "/api/v1/posts/getPost/{postId}")
-    public ResponseEntity<?>  getPostById(@PathVariable int postId) {
+    public ResponseEntity<?> getPostById(@PathVariable int postId) {
         try {
             PostBean post = postService.getPostById(postId);
             return ResponseEntity.ok(post);
@@ -118,16 +118,16 @@ public class PostController {
     }
 
     @ApiOperation(value = "This API is used to get posts based on userId")
-    @GetMapping(value = "/api/v1/posts/getPostFromFriends/{userId}")
+    @GetMapping(value = "/api/v1/posts/retrievePost/{userId}")
     public List<Post> getPostsFromFriends(@PathVariable int userId) {
         User user = userRepository.findById(userId).orElse(null);
         logger.info("UserId: " + userId);
         if (user != null) {
             List<Post> posts = postService.findPostsFromFriendsByUserId(userId);
+            logger.info("Posts: " + posts);
             return posts;
-        } else {
-            throw new UserNotFoundException("User not found with userId: " + userId);
         }
+        throw new UserNotFoundException("User not found with userId: " + userId);
     }
 
     @ApiOperation(value = "This API is used to get media based on postId")

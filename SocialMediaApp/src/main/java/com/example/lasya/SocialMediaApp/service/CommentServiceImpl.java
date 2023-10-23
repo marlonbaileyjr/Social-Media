@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -39,8 +40,9 @@ public class CommentServiceImpl implements CommentService{
 
     @Override
     @Transactional
-    public void addCommentToPost(int postId, String text) {
-        commentRepository.addCommentToPost(postId, text);
+    public void addCommentToPost(int postId, int userId, String text, Integer parentCommentId, LocalDateTime uploadTime) {
+        logger.info("inside addCommentToPost method");
+        commentRepository.addCommentToPost(postId, userId, text, parentCommentId, uploadTime);
     }
 }
 

@@ -7,7 +7,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.Timestamp;
 import java.util.List;
 
 @Service
@@ -23,13 +25,18 @@ public class LikeServiceImpl implements LikeService {
 
     @Override
     public List<Like> findByPost_PostId(int postId) {
-        return likeRepository.findByPost_PostId(postId);
+        logger.info("inside findByPost_PostId method");
+        List<Like> likes = likeRepository.findByPost_PostId(postId);
+        // Log the retrieved likes for debugging
+        logger.debug("Likes found: {}", likes);
+        return likes;
     }
 
     @Override
-    public ResponseEntity<String> addLikeToPost(int postId) {
-        likeRepository.addLikeToPost(postId);
-        return null;
+    @Transactional
+    public ResponseEntity<String> addLikeToPost(int userId, int postId, Timestamp uploadTime) {
+        likeRepository.addLikeToPost(userId, postId, uploadTime);
+        return ResponseEntity.ok("Like added successfully.");
     }
 
     @Override
