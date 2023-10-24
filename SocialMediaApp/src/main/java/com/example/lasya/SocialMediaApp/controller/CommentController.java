@@ -50,18 +50,19 @@ public class CommentController {
     }
 
     @ApiOperation(value = "This API is used to delete a comment based on a given commentId")
-    @DeleteMapping("/api/v1/comment/{commentId}")
+    @DeleteMapping("/api/v1/comment/delete/{commentId}")
     public ResponseEntity<String> deleteCommentById(@PathVariable int commentId) {
         commentService.deleteByCommentId(commentId);
         return ResponseEntity.ok("Comment deleted successfully");
     }
 
     @ApiOperation(value = "This API is used to edit a comment based on a given commentId")
-    @PutMapping("/api/v1/comment/{commentId}")
+    @PutMapping("/api/v1/comment/edit/{commentId}")
     public ResponseEntity<String> editComment(
             @PathVariable int commentId,
             @RequestBody Map<String, String> request) {
-        String newText = request.get("newText");
+        String newText = request.get("text");
+        logger.info("commentId: {}, newText: {}", commentId, newText);
         commentService.editComment(commentId, newText);
         return ResponseEntity.ok("Comment edited successfully");
     }

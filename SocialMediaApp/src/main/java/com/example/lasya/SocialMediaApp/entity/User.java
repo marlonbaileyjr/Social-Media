@@ -1,9 +1,6 @@
 package com.example.lasya.SocialMediaApp.entity;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import jakarta.persistence.*;
 import lombok.NonNull;
@@ -86,13 +83,15 @@ public class User {
     private List<Friendship> friendships;
 
     @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
-    @JsonIgnore
+    @JsonBackReference
     private List<Like> likes;
 
     @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
+    @JsonBackReference
     private List<Post> posts;
 
     @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
+    @JsonBackReference
     private List<Comment> comments;
 
     public User(String userName, String password) {

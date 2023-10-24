@@ -23,6 +23,8 @@ public class Comment {
 
     private String text;
 
+    private String parentCommentId;
+
     @Column(name = "uploadTime")
     private java.sql.Date uploadTime;
 

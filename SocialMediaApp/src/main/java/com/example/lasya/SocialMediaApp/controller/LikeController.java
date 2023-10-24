@@ -1,21 +1,22 @@
 package com.example.lasya.SocialMediaApp.controller;
 
-import com.example.lasya.SocialMediaApp.bean.LikeBean;
-import com.example.lasya.SocialMediaApp.entity.Like;
 import com.example.lasya.SocialMediaApp.exception.PostNotFoundException;
+import com.example.lasya.SocialMediaApp.repository.PostRepository;
 import com.example.lasya.SocialMediaApp.service.LikeService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -23,10 +24,15 @@ import java.util.Map;
 public class LikeController {
     private final LikeService likeService;
 
+    private final PostRepository postRepository;
+
+    Logger logger = LoggerFactory.getLogger(LikeController.class);
+
     @Autowired
-    public LikeController(LikeService likeService) {
+    public LikeController(LikeService likeService, PostRepository postRepository) {
         super();
         this.likeService = likeService;
+        this.postRepository = postRepository;
     }
 
     @ApiOperation(value = "This API is used to get likes by post id field")
@@ -40,13 +46,15 @@ public class LikeController {
     })
     @ExceptionHandler(PostNotFoundException.class)
     @GetMapping(value = "/api/v1/likes/{postId}")
-    public ResponseEntity<List<Like>> getLikesByPostId(@PathVariable int postId) {
-        try {
-            List<Like> likes = likeService.findByPost_PostId(postId);
-            return ResponseEntity.ok(likes);
-        } catch (PostNotFoundException ex) {
-            // Handle the exception and return an error response
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ArrayList<Like>());
+    public List<Map<String, Object>> getLikesByPostId(@PathVariable int postId) {
+        if(!postRepository.existsById(postId)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Post not found: " + postId);
+        }
+        List<Map<String, Object>> likeData = likeService.findByPost_PostId(postId);
+        if(!(likeData).isEmpty()){
+            return likeData;
+        }else{
+            throw new PostNotFoundException("Post not found with postId: " + postId);
         }
     }
 

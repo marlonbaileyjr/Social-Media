@@ -13,7 +13,7 @@ import org.springframework.web.reactive.result.method.annotation.ResponseEntityE
 @RestController
 public class CommentExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler({CommentNotFoundException.class})
-    public final ResponseEntity<String> handleUserNotFoundException(CommentNotFoundException ex, WebRequest request) {
+    public final ResponseEntity<String> handleCommentNotFoundException(CommentNotFoundException ex, WebRequest request) {
         return new ResponseEntity<String>(ex.getMessage(), HttpStatus.NOT_FOUND);
     }
 }

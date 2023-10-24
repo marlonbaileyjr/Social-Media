@@ -13,7 +13,7 @@ import org.springframework.web.reactive.result.method.annotation.ResponseEntityE
 @RestController
 public class LikeExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler({LikeNotFoundException.class})
-    public final ResponseEntity<String> handleUserNotFoundException(LikeNotFoundException ex, WebRequest request) {
+    public final ResponseEntity<String> handleLikeNotFoundException(LikeNotFoundException ex, WebRequest request) {
         return new ResponseEntity<String>(ex.getMessage(), HttpStatus.NOT_FOUND);
     }
 }

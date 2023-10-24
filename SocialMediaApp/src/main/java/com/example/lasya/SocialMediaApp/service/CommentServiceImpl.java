@@ -1,6 +1,7 @@
 package com.example.lasya.SocialMediaApp.service;
 
 import com.example.lasya.SocialMediaApp.entity.Comment;
+import com.example.lasya.SocialMediaApp.exception.CommentTextNotFoundException;
 import com.example.lasya.SocialMediaApp.repository.CommentRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,6 +29,7 @@ public class CommentServiceImpl implements CommentService{
     }
 
     @Override
+    @Transactional
     public void deleteByCommentId(int commentId) {
         commentRepository.deleteByCommentId(commentId);
     }
@@ -35,7 +37,11 @@ public class CommentServiceImpl implements CommentService{
     @Override
     @Transactional
     public void editComment(int commentId, String newText) {
-        commentRepository.editComment(commentId, newText);
+        if (newText != null && !newText.isEmpty()) {
+            commentRepository.editComment(commentId, newText);
+        } else {
+            throw new CommentTextNotFoundException("New comment text not found");
+        }
     }
 
     @Override

@@ -12,10 +12,12 @@ import java.util.List;
 
 @Repository
 public interface CommentRepository extends JpaRepository<Comment, Integer> {
+    @Modifying
     List<Comment> findByPostPostId(int postId);
 
     // Delete a comment by commentId
-    public void deleteByCommentId(int commentId);
+    @Modifying
+    void deleteByCommentId(int commentId);
 
     // Custom query method to edit a comment by its ID
     @Modifying

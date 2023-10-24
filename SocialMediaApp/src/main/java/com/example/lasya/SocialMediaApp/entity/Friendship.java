@@ -1,8 +1,11 @@
 package com.example.lasya.SocialMediaApp.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 
 import lombok.Data;
+
+import java.time.LocalDateTime;
 
 @Data
 @Entity
@@ -22,18 +25,20 @@ public class Friendship {
     }
 
     private int followerId;
+
     private int followedId;
-    private String userName;
 
     @Column(name = "uploadTime")
-    private java.sql.Date uploadTime;
+    private LocalDateTime uploadTime;
 
     @ManyToOne
     @JoinColumn(name = "followerId", referencedColumnName = "userId", insertable = false, updatable = false)
+    @JsonBackReference
     private User follower;
 
     @ManyToOne
     @JoinColumn(name = "followedId", referencedColumnName = "userId", insertable = false, updatable = false)
+    @JsonBackReference
     private User followed;
 
 }

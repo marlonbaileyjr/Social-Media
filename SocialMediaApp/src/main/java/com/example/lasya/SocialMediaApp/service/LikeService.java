@@ -5,10 +5,11 @@ import org.springframework.http.ResponseEntity;
 
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.Map;
 
 public interface LikeService {
 
-    List<Like> findByPost_PostId(int postId);
+    List<Map<String, Object>> findByPost_PostId(int postId);
 
     ResponseEntity<String> addLikeToPost(int userId, int postId, Timestamp uploadTime);
 

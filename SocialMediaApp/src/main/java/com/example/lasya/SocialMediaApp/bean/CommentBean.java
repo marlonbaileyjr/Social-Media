@@ -9,5 +9,6 @@ public class CommentBean {
     private int commentId;
 
     private String text;
+    private String parentCommentId;
     private LocalDateTime commentTime;
 }

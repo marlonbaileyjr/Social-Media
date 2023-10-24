@@ -13,7 +13,7 @@ import org.springframework.web.reactive.result.method.annotation.ResponseEntityE
 @RestController
 public class PostExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler({PostNotFoundException.class})
-    public final ResponseEntity<String> handleUserNotFoundException(PostNotFoundException ex, WebRequest request) {
+    public final ResponseEntity<String> handlePostNotFoundException(PostNotFoundException ex, WebRequest request) {
         return new ResponseEntity<String>(ex.getMessage(), HttpStatus.NOT_FOUND);
     }
 }

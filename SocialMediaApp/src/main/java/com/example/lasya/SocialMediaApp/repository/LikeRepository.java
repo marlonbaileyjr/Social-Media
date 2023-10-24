@@ -9,12 +9,13 @@ import org.springframework.stereotype.Repository;
 
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.Map;
 
 @Repository
 public interface LikeRepository extends JpaRepository<Like, Integer> {
 
-    @Query("SELECT l FROM Like l JOIN l.post p WHERE p.postId = :postId")
-    List<Like> findByPost_PostId(int postId);
+    @Query(value = "SELECT NEW map(l.likeId, l.uploadTime, l.user.userId) FROM Like l JOIN l.post p WHERE p.postId = :postId")
+    List<Map<String, Object>> findByPost_PostId(int postId);
 
     @Modifying
     @Query(value = "INSERT INTO like_table (user_id, post_id, upload_time) VALUES (:userId, :postId, :uploadTime)", nativeQuery = true)
