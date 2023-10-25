@@ -11,7 +11,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,16 +23,14 @@ import java.util.stream.Collectors;
 public class UserServiceImpl implements UserService{
     private static final Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
     private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
 
     @PersistenceContext
     private EntityManager entityManager;
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public UserServiceImpl(UserRepository userRepository) {
         super();
         this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -122,35 +119,33 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public UserBean signInUser(String userName, String password) {
-        User user = new User(userName, passwordEncoder.encode(password));
-        // Step 1: Retrieve the user from the repository based on the username
+    public String signInUser(String userName, String password) {
         List<User> users = userRepository.findByUserName(userName);
-        // Step 2: Check if a user is found
+
         if (!users.isEmpty()) {
-            user = users.get(0);
-            // Step 3: Verify that the user exists and the password matches
-            if (passwordMatches(user, password)) {
-                // Step 4: Return the corresponding UserBean
-                return getBeanFromEntity(user);
+            User user = users.get(0);
+            String dbPassword = user.getPassword();
+
+            logger.info("Database Password: " + dbPassword);
+
+            if (password.equals(user.getPassword())) {
+                // Authentication successful, return the user's ID as a String
+                return String.valueOf(user.getUserId());
             }
         }
-        return null;
-    }
 
-    private boolean passwordMatches(User user, String password) {
-        // Use the PasswordEncoder to verify the password
-        return passwordEncoder.matches(password, user.getPassword());
+        // Authentication failed, return an error message as a String
+        return "Authentication failed. Incorrect password";
     }
 
     @Override
     public UserBean updatePasswordByEmail(String email, String newPassword) {
         User user = userRepository.findByEmail(email);
         if (user != null) {
-            user.setPassword(passwordEncoder.encode(newPassword));
+            user.setPassword(newPassword); // Set the new password directly
             User updatedUser = userRepository.save(user);
             return getBeanFromEntity(updatedUser);
-        }else {
+        } else {
             throw new UserNotFoundException("User does not exist: " + email);
         }
     }

@@ -22,7 +22,7 @@ public interface UserService {
 
     public UserBean signUpUser(UserBean userBean);
 
-    public UserBean signInUser(String userName, String password);
+    public String signInUser(String userName, String password);
 
     public UserBean updatePasswordByEmail(String email, String newPassword);
 

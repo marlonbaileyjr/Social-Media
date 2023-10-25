@@ -80,10 +80,18 @@ public class UserController {
 
     @ApiOperation(value = "This API is used to sign in a user")
     @PostMapping(value = "/api/v1/users/signin")
-    public UserBean signInUser(@RequestBody Map<String, String> credentials){
+    public ResponseEntity<String> signInUser(@RequestBody Map<String, String> credentials){
         String username = credentials.get("userName");
         String password = credentials.get("password");
-        return userService.signInUser(username, password);
+        String authenticationResult = userService.signInUser(username, password);
+
+        if (authenticationResult != null && authenticationResult.matches("\\d+")) {
+            // Authentication was successful
+            return ResponseEntity.ok(authenticationResult);
+        } else {
+            // Authentication failed, return an error message
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(authenticationResult);
+        }
     }
 
     @ApiOperation(value = "This API is used to update password field by providing the user email field")
