@@ -2,27 +2,23 @@ import React, { useContext, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../css/header.css';
 import { UserContext } from '../userContext';
-import {searchUser} from '../functions/userFunctions'
+import UserSearchModal from '../props/searchUserModal';
 
 function Header() {
   const { userID, setLoggedin } = useContext(UserContext);
   const navigate = useNavigate();
 
   const [menuVisible, setMenuVisible] = useState(false);
-  const [searchValue, setSearchValue] = useState('');
-  const [searchResults, setSearchResults] = useState([]);
 
-  const handleSearchChange = async (e) => {
-      const value = e.target.value;
-      setSearchValue(value);
+  const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
 
-      if (value) {
-        const results = await searchUser(value); // Assuming searchUser is an asynchronous function
-        setSearchResults(results);
-    } else {
-        setSearchResults([]); // Clear results if input is empty
-    }
-};
+  const openSearchModal = () => {
+    setIsSearchModalOpen(true);
+  };
+
+  const closeSearchModal = () => {
+    setIsSearchModalOpen(false);
+  };
 
   const toggleMenu = () => {
     setMenuVisible(!menuVisible);
@@ -39,11 +35,6 @@ function Header() {
   const navigateToProfile = () => {
     navigate(`/profile/${userID}`);
   };
-
-  const navigateToUserProfile = (userID) => {
-    navigate(`/profile/${userID}`);
-  };
-
   const logOut = () => {
     setLoggedin(false);
     setMenuVisible(false); // Close the menu when signing out
@@ -54,32 +45,14 @@ function Header() {
       <div className="logo" onClick={navigateToMain}>
         MyLogo
       </div>
+      <div className="search-icon" onClick={openSearchModal}>
+        <i className="fas fa-search"></i>
+      </div>
       <div className={`menu-icon ${menuVisible ? 'open' : ''}`} onClick={toggleMenu}>
         <i className="fa fa-bars"></i>
       </div>
-      <div className="searchbar-div">
-                <input 
-                    type="text" 
-                    placeholder="Search..." 
-                    className="searchbar" 
-                    value={searchValue} 
-                    onChange={handleSearchChange}
-                />
-                {searchResults.length > 0 && (
-                    <div className="search-results-dropdown">
-                        {searchResults.map(user => (
-                            <div 
-                                key={user.id} 
-                                className="search-result-item" 
-                                onClick={() => navigateToUserProfile(user.id)}
-                            >
-                                <img src={user.profileImage} alt={`${user.firstName} ${user.lastName}`} />
-                                <span>{`${user.firstName} ${user.lastName}`}</span>
-                            </div>
-                        ))}
-                    </div>
-                )}
-            </div>
+      
+      <UserSearchModal isOpen={isSearchModalOpen} onClose={closeSearchModal} />
       <div className={`profile-menu ${menuVisible ? 'visible' : ''}`}>
         <div className="menu-header">
           <span className="close-button" onClick={toggleMenu}>

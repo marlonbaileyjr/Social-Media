@@ -1,6 +1,8 @@
 import React, { useContext, useEffect, useState } from 'react';
 import '../css/profile.css';
 import { useParams } from 'react-router-dom';
+import FirstAndLastNameModal from '../props/FirstandLastNameModal';
+import BioAndUsernameModal from '../props/UsernameAndBioModal';
 import noImg from '../img/NOIMG.jpeg'
 import { UserContext } from '../userContext';
 import {getPostById, getPicturesFromPost, getPostByPostId} from '../functions/postFunctions'; 
@@ -19,6 +21,24 @@ function ProfilePage(props) {
   const [followersCount, setFollowersCount] = useState(0);
   const [followedCount, setFollowedCount] = useState(0);
   const [isFollowing, setIsFollowing] = useState(false);
+  const [isBioModalOpen, setIsBioModalOpen] = useState(false);
+  const [isNameModalOpen, setIsNameModalOpen] = useState(false);
+
+  function handleBioIconClick() {
+    setIsBioModalOpen(true);
+}
+
+function handleNameIconClick() {
+    setIsNameModalOpen(true);
+}
+
+function closeBioModal() {
+    setIsBioModalOpen(false);
+}
+
+function closeNameModal() {
+    setIsNameModalOpen(false);
+}
 
 
   const canEdit = Number(paramUserId) === contextUserId;
@@ -89,16 +109,37 @@ function ProfilePage(props) {
     <div className="profile-page">
       <div className="profile-header">
         <img src={user.profilePicture} alt={`${user.username}'s profile`} className="profile-pic" />
-        {canEdit && <i className="fas fa-edit"></i>}
         <h1>
-          {user.userName} {canEdit && <i className="fas fa-edit"></i>}
+          {user.userName}
         </h1>
-        <h2>
-          {user.firstName} {user.lastName} {canEdit && <i className="fas fa-edit"></i>}
-        </h2>
         <p>
-          {user.bio} {canEdit && <i className="fas fa-edit"></i>}
+            {user.bio} {canEdit && <i className="fas fa-edit" onClick={handleBioIconClick}></i>}
         </p>
+        <h2>
+            {user.firstName} {user.lastName} {canEdit && <i className="fas fa-edit" onClick={handleNameIconClick}></i>}
+        </h2>
+        {user && ( // Ensure user data is available before rendering modals
+                <>
+                    {isBioModalOpen && (
+                        <BioAndUsernameModal 
+                            isOpen={isBioModalOpen}
+                            onClose={closeBioModal}
+                            initialBio={user.bio}
+                            initialUsername={user.userName}
+                        />
+                    )}
+
+                    {isNameModalOpen && (
+                        <FirstAndLastNameModal 
+                            isOpen={isNameModalOpen}
+                            onClose={closeNameModal}
+                            initialFirstName={user.firstName}
+                            initialLastName={user.lastName}
+                        />
+                    )}
+                </>
+            )}
+        
         <div className="follow-info">
         <span>
           <strong>{followersCount}</strong> followers

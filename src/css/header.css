@@ -1,6 +1,6 @@
 .sticky-header {
   display: flex;
-  justify-content: space-between;
+  justify-content: space-between; /* Distribute space between children */
   align-items: center;
   position: sticky;
   top: 0;
@@ -13,27 +13,22 @@
 .logo {
   font-weight: bold;
   font-size: 24px;
+  flex-shrink: 0; /* Ensure the logo doesn't shrink */
 }
 
-.searchbar-div {
-  flex-grow: 1;
-  display: flex;
-  justify-content: center; /* Center the search bar horizontally */
+.search-icon {
+  font-size: 24px;
+  cursor: pointer;
+  flex-grow: 1; /* Make the search icon grow and push other elements */
+  text-align: center; /* Center the actual icon in its space */
 }
 
-.searchbar {
-  width: 20%;
-  max-width: 300px;
-  padding: 5px 8px;
-  border-radius: 4px;
-  border: 1px solid #ccc;
-  outline: none;
+.menu-icon {
+  font-size: 24px;
+  cursor: pointer;
+  flex-shrink: 0; /* Ensure the menu icon doesn't shrink */
 }
 
-.profile-actions {
-  display: flex;
-  align-items: center;
-}
 
 .add-post-btn {
   margin-right: 10px;
@@ -127,7 +122,6 @@
 .menu-icon {
   font-size: 24px;
   cursor: pointer;
-  order: 2; /* Push the menu icon to the far right */
 }
 
 @media (max-width: 768px) {

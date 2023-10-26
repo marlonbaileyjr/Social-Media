@@ -1,16 +1,3 @@
-/* General Modal Styling */
-.Modal {
-    background-color: white;
-    border-radius: 4px;
-    padding: 20px;
-    width: 80%;
-    max-width: 400px;
-    margin: 10% auto; /* Center the modal vertically */
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    position: relative;
-    overflow: hidden;
-}
-
 /* Button Styles */
 button {
     background-color: #007BFF;
@@ -76,8 +63,8 @@ label {
 /* Mobile Responsive Styles */
 @media (max-width: 768px) {
     .Modal {
-        width: 95%;
-        margin-top: 20%;
+        width: 80%; /* Adjusted for smaller screens */
+        margin-top: 10%; /* Adjusted for better centering on mobile */
     }
 
     input, textarea {

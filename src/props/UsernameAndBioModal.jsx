@@ -1,46 +1,55 @@
 import React, { useState } from 'react';
 import Modal from 'react-modal';
-import updateProfile from '../css/updateProfile.css'
+import '../css/updateProfile.css';
 
-Modal.setAppElement('#root');
+Modal.setAppElement('#root'); // this line should be in your root component instead
 
-function BioAndUsernameModal({ initialBio = '', initialUsername = '' }) {
-    const [modalIsOpen, setModalIsOpen] = useState(false);
-    const [bio, setBio] = useState(initialBio);
-    const [username, setUsername] = useState(initialUsername);
+function BioAndUsernameModal({ isOpen, onClose, initialBio = '', initialUsername = '' }) {
+  const [bio, setBio] = useState(initialBio);
+  const [username, setUsername] = useState(initialUsername);
 
-    const updateProfile = () => {
-        console.log("Updated profile:", bio, username);
-        setModalIsOpen(false);
-    };
+  const updateProfile = () => {
+      console.log("Updated profile:", bio, username);
+      // You might want to do something (e.g., API call) before closing
+      onClose(); // call the passed onClose method
+  };
 
-    return (
-        <div>
-            <button onClick={() => setModalIsOpen(true)}>Open Modal</button>
-            <Modal
-                isOpen={modalIsOpen}
-                onRequestClose={() => setModalIsOpen(false)}
-            >
-                <h2>Update Profile</h2>
-                <div>
-                    <label>Username: </label>
-                    <input
-                        value={username}
-                        onChange={e => setUsername(e.target.value)}
-                    />
-                </div>
-                <div>
-                    <label>Bio: </label>
-                    <textarea
-                        value={bio}
-                        onChange={e => setBio(e.target.value)}
-                    />
-                </div>
-                <button onClick={updateProfile}>Update</button>
-                <button onClick={() => setModalIsOpen(false)}>Close</button>
-            </Modal>
-        </div>
-    );
+  const customStyles = {
+    content: {
+      top: '50%',
+      left: '50%',
+      right: 'auto',
+      bottom: 'auto',
+      marginRight: '-50%',
+      transform: 'translate(-50%, -50%)',
+    },
+  };
+
+  return (
+    <Modal
+      isOpen={isOpen}
+      onRequestClose={onClose} // calling the external close handler
+      style={customStyles}
+    >
+      <h2>Update Profile</h2>
+      <div>
+          <label>Username: </label>
+          <input
+              value={username}
+              onChange={e => setUsername(e.target.value)}
+          />
+      </div>
+      <div>
+          <label>Bio: </label>
+          <textarea
+              value={bio}
+              onChange={e => setBio(e.target.value)}
+          />
+      </div>
+      <button onClick={updateProfile}>Update</button>
+      <button onClick={onClose}>Close</button> {/* calling the external close handler */}
+    </Modal>
+  );
 }
 
 export default BioAndUsernameModal;

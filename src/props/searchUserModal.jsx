@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
 import Modal from 'react-modal';
+import { useNavigate } from 'react-router-dom';
 
-Modal.setAppElement('#root');
-
-function UserSearchModal() {
-    const [modalIsOpen, setModalIsOpen] = useState(false);
+function UserSearchModal({ isOpen, onClose }) {
+    const navigate = useNavigate();
     const [searchTerm, setSearchTerm] = useState('');
     const [results, setResults] = useState([]);
 
@@ -20,12 +19,29 @@ function UserSearchModal() {
         setResults(data.filter(user => user.username.includes(query)));
     };
 
+    const navigateToUserProfile = (userID) => {
+        navigate(`/profile/${userID}`);
+      };
+
+    const customStyles = {
+        content: {
+          top: '50%',
+          left: '50%',
+          right: 'auto',
+          bottom: 'auto',
+          marginRight: '-50%',
+          transform: 'translate(-50%, -50%)',
+          width: '60%', 
+          height: '70%'
+        },
+      };
+
     return (
         <div>
-            <button onClick={() => setModalIsOpen(true)}>Search Users</button>
             <Modal
-                isOpen={modalIsOpen}
-                onRequestClose={() => setModalIsOpen(false)}
+                isOpen={isOpen}
+                onRequestClose={onClose}
+                style={customStyles}
             >
                 <div className="search-bar">
                     <input
@@ -43,7 +59,7 @@ function UserSearchModal() {
                         </div>
                     ))}
                 </div>
-                <button onClick={() => setModalIsOpen(false)}>Close</button>
+                <button onClick={onClose}>Close</button>
             </Modal>
         </div>
     );
