@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import {SignUpUser} from '../functions/userFunctions.jsx'
+import axios from 'axios';
 
 function SignUp() {
   const [firstName, setFirstName] = useState('');
@@ -12,16 +12,26 @@ function SignUp() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    // Call the SignUp function here
-    const success = await SignUpUser(firstName, lastName, username, email, password, dob);
 
-    if (success) {
-      // Registration was successful, you can redirect the user or show a success message
-      console.log('Registration successful');
-    } else {
-      // Registration failed, you can display an error message
-      console.error('Registration failed');
+    try {
+      const response = await axios.post('http://localhost:8080/api/v1/users/signup', {
+        firstName,
+        lastName,
+        userName: username,
+        email,
+        password,
+        dateOfBirth: dob,
+        dateJoined: new Date().toISOString().slice(0, 10)
+      });
+
+      if (response.status === 200 || response.status === 201) {
+        alert('Registration successful');
+      } else {
+        alert('Registration failed');
+      }
+
+    } catch (error) {
+      console.error('Error during registration:', error);
     }
   };
 

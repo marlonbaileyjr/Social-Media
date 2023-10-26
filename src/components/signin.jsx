@@ -1,31 +1,39 @@
 import React, { useState, useContext } from 'react';
 import { Link } from 'react-router-dom';
 import { UserContext } from '../userContext'; // Import your UserContext
+import axios from 'axios';  // Import axios
 import '../css/signin.css';
-import {SignInUser} from '../functions/userFunctions.jsx'
 
 function SignIn() {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const {setLoggedin, setUserID } = useContext(UserContext);
-  
-  const handleSignIn = async () => {
-    const success = await SignInUser(username, password); // Call the signin function
+    const [username, setUsername] = useState('');
+    const [password, setPassword] = useState('');
+    const { setLoggedin, setUserID } = useContext(UserContext);
 
-    if (success) {
-      setLoggedin(true);
-      setUserID(1);
-      console.log('Signin successful');
-    } else {
-      // Signin failed, you can display an error message
-      console.error('Signin failed');
-    }
-  };
+    const handleSignIn = async () => {
+        try {
+            const response = await axios.post('http://localhost:8080/api/v1/users/signin', {
+                userName: username,
+                password: password
+            });
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    handleSignIn();
-  };
+            if (response.status === 200) {
+                setLoggedin(true);
+                setUserID(response.data);  // Assuming the response contains only the user ID
+                alert('Signin successful');
+            }
+        } catch (error) {
+            if (error.response && error.response.status === 401) {
+                alert('Incorrect password.');
+            } else {
+                console.error('Error during sign-in:', error.message || error);
+            }
+        }
+    };
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        handleSignIn();
+    };
 
   return (
     <div className="sign-in-container">
@@ -34,8 +42,8 @@ function SignIn() {
             <div className="input-group">
                 <label htmlFor="email">Username:</label>
                 <input
-                    type="text"
-                    id="text"
+                    type="username"
+                    id="username"
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
                     required
