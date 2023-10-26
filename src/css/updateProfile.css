@@ -1,0 +1,90 @@
+/* General Modal Styling */
+.Modal {
+    background-color: white;
+    border-radius: 4px;
+    padding: 20px;
+    width: 80%;
+    max-width: 400px;
+    margin: 10% auto; /* Center the modal vertically */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    position: relative;
+    overflow: hidden;
+}
+
+/* Button Styles */
+button {
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    margin-right: 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+button:last-child {
+    margin-right: 0;
+}
+
+/* Input and Textarea Styles */
+input, textarea {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 16px;
+    box-sizing: border-box;
+}
+
+label {
+    font-weight: bold;
+    display: block;
+    margin-bottom: 8px;
+}
+
+/* ... previous styles ... */
+
+.search-bar {
+    display: flex;
+    gap: 10px; /* Space between search input and button */
+    margin-bottom: 20px;
+}
+
+.user-result {
+    padding: 10px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.user-result strong {
+    display: block;
+    font-size: 18px;
+}
+
+.user-result p {
+    font-size: 14px;
+    color: #666;
+    margin: 0;
+}
+
+
+/* Mobile Responsive Styles */
+@media (max-width: 768px) {
+    .Modal {
+        width: 95%;
+        margin-top: 20%;
+    }
+
+    input, textarea {
+        font-size: 14px;
+    }
+
+    label {
+        font-size: 14px;
+    }
+}
