@@ -13,7 +13,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -123,9 +125,18 @@ public class UserController {
     }
 
     @ApiOperation(value = "This API is used to update profile picture field by providing the user id field")
-    @PutMapping(value = "/api/v1/users/updateProfilePicture")
-    public UserBean updateProfilePicture(@PathVariable int userId, @PathVariable byte[] newProfilePicture){
-        return userService.updateProfilePicture(userId, newProfilePicture);
+    @PutMapping(value = "/api/v1/users/updateProfilePicture/{userId}")
+    public ResponseEntity<UserBean> updateProfilePicture(
+            @PathVariable int userId,
+            @RequestParam("profilePicture") MultipartFile newProfilePicture
+    ) {
+        try {
+            byte[] newProfilePictureBytes = newProfilePicture.getBytes();
+            UserBean updatedUser = userService.updateProfilePicture(userId, newProfilePictureBytes);
+            return ResponseEntity.ok(updatedUser);
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
     }
 
     @ApiOperation(value = "This API is used to update firstName and lastname fields by providing the user id field")

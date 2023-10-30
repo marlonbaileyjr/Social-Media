@@ -240,9 +240,9 @@ public class UserServiceImpl implements UserService{
         userBean.setPassword(user.getPassword());
         userBean.setBio(user.getBio());
         userBean.setDateOfBirth(user.getDateOfBirth());
-        user.setDateJoined(user.getDateJoined());
-        user.setLastLogin(user.getLastLogin());
-        user.setProfilePicture(user.getProfilePicture());
+        userBean.setDateJoined(user.getDateJoined());
+        userBean.setLastLogin(user.getLastLogin());
+        userBean.setProfilePicture(user.getProfilePicture());
         return userBean;
     }
 
