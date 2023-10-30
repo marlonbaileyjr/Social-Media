@@ -2,6 +2,7 @@ package com.example.lasya.SocialMediaApp.service;
 
 import com.example.lasya.SocialMediaApp.bean.PostBean;
 import com.example.lasya.SocialMediaApp.bean.UserBean;
+import com.example.lasya.SocialMediaApp.entity.Pictures;
 import com.example.lasya.SocialMediaApp.entity.Post;
 import com.example.lasya.SocialMediaApp.entity.User;
 import com.example.lasya.SocialMediaApp.exception.PostNotFoundException;
@@ -86,6 +87,7 @@ public class PostServiceImpl implements PostService {
         logger.info("Querying for posts of user with userId: " + userId);
         List<Post> posts = postRepository.findPostsFromFriendsByUserId(userId);
         logger.info("Found " + posts.size() + " posts");
+        logger.info("posts: {}", posts);
         return posts;
     }
 
@@ -110,8 +112,43 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public void addPicture(byte[] media, String type, int order, Date uploadTime, Post post) {
-        postRepository.addPicture(media, type, order, (java.sql.Date) uploadTime, post.getPostId());
+    @Transactional
+    public Pictures addPicture(byte[] media, String type, int order, Date uploadTime, Post post) {
+        logger.info("inside addPicture method");
+        Pictures newPicture = new Pictures();
+        newPicture.setMedia(media);
+        newPicture.setType(type);
+        newPicture.setOrder(order);
+        newPicture.setUploadTime(uploadTime);
+        newPicture.setPost(post);
+//        logger.info("newPicture: " + newPicture);
+        post.getPictures().add(newPicture);
+        postRepository.save(post);
+        return newPicture;
+    }
+
+    @Override
+    public Post findPostByPostId(int postId){
+        return postRepository.findPostByPostId(postId);
+    }
+
+    @Override
+    public boolean existsPostByPostId(int postId) {
+        return false;
+    }
+
+    @Override
+    public Pictures getCreatedPicture() {
+        return null;
+    }
+
+    @Override
+    public Pictures getLatestPictureByPostId(int postId) {
+        List<Pictures> pictures = postRepository.findLatestPictureByPostId(postId);
+        if (!pictures.isEmpty()) {
+            return pictures.get(0); // The first picture in the list is the latest one
+        }
+        return null;
     }
 
     private PostBean getBeanFromEntity(Post post) {
@@ -136,7 +173,6 @@ public class PostServiceImpl implements PostService {
         User user = new User();
         user.setUserId(postBean.getUserId());
         post.setUser(user);
-        // logic for handling pictures and comments if needed
         return post;
     }
 

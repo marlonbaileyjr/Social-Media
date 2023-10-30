@@ -10,12 +10,17 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.example.lasya.SocialMediaApp.repository.UserRepository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -24,16 +29,14 @@ import java.util.stream.Collectors;
 public class UserServiceImpl implements UserService{
     private static final Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
     private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
 
     @PersistenceContext
     private EntityManager entityManager;
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public UserServiceImpl(UserRepository userRepository) {
         super();
         this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -122,35 +125,40 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public UserBean signInUser(String userName, String password) {
-        User user = new User(userName, passwordEncoder.encode(password));
-        // Step 1: Retrieve the user from the repository based on the username
+    public String signInUser(String userName, String password) {
         List<User> users = userRepository.findByUserName(userName);
-        // Step 2: Check if a user is found
+
         if (!users.isEmpty()) {
-            user = users.get(0);
-            // Step 3: Verify that the user exists and the password matches
-            if (passwordMatches(user, password)) {
-                // Step 4: Return the corresponding UserBean
-                return getBeanFromEntity(user);
+            User user = users.get(0);
+
+            String dbUserName = user.getUserName();
+            String dbPassword = user.getPassword();
+
+            logger.info("Database username: " + dbUserName);
+            logger.info("Database Password: " + dbPassword);
+
+            if (password.equals(user.getPassword())) {
+                return createAndReturnUserBean(user);
             }
         }
-        return null;
+        // Create a custom UserBean for authentication failure
+        UserBean authenticationFailedBean = new UserBean("Authentication failed. Incorrect password");
+        return authenticationFailedBean.getUserName();
     }
 
-    private boolean passwordMatches(User user, String password) {
-        // Use the PasswordEncoder to verify the password
-        return passwordEncoder.matches(password, user.getPassword());
+    private String createAndReturnUserBean(User user) {
+        UserBean userBean = new UserBean(user.getUserId());
+        return String.valueOf(userBean.getUserId());
     }
 
     @Override
     public UserBean updatePasswordByEmail(String email, String newPassword) {
         User user = userRepository.findByEmail(email);
         if (user != null) {
-            user.setPassword(passwordEncoder.encode(newPassword));
+            user.setPassword(newPassword);
             User updatedUser = userRepository.save(user);
             return getBeanFromEntity(updatedUser);
-        }else {
+        } else {
             throw new UserNotFoundException("User does not exist: " + email);
         }
     }

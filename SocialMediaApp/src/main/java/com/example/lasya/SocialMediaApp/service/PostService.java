@@ -2,6 +2,7 @@ package com.example.lasya.SocialMediaApp.service;
 
 import com.example.lasya.SocialMediaApp.bean.PostBean;
 import com.example.lasya.SocialMediaApp.bean.UserBean;
+import com.example.lasya.SocialMediaApp.entity.Pictures;
 import com.example.lasya.SocialMediaApp.entity.Post;
 
 import java.sql.Date;
@@ -23,6 +24,14 @@ public interface PostService {
 
     void addPost(String caption, Date uploadTime, UserBean user);
 
-    void addPicture(byte[] media, String type, int order, Date uploadTime, Post post);
+    Pictures addPicture(byte[] media, String type, int order, Date uploadTime, Post post);
+
+    boolean existsPostByPostId(int postId);
+
+    Pictures getCreatedPicture();
+
+    Post findPostByPostId(int postId);
+
+    Pictures getLatestPictureByPostId(int postId);
 }
 

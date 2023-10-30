@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -32,17 +33,23 @@ public class Post {
     @Column(name = "upload_time")
     private java.sql.Date uploadTime;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
     @JsonBackReference
     private User user;
 
-    @OneToMany(mappedBy = "post")
+    @OneToMany(mappedBy = "post", fetch = FetchType.EAGER,  cascade = CascadeType.PERSIST)
     @JsonBackReference
-    private List<Pictures> pictures;
+    private List<Pictures> pictures = new ArrayList<>();
 
-    @OneToMany(mappedBy = "post")
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "post")
     @JsonBackReference
     private List<Comment> comments;
+
+    @Override
+    public String toString() {
+        return "Post{postId=" + postId + ", caption='" + caption + "', uploadTime=" + uploadTime + "}";
+    }
+
 }
 

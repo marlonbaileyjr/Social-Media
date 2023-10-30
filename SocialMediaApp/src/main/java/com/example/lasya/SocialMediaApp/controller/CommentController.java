@@ -2,6 +2,8 @@ package com.example.lasya.SocialMediaApp.controller;
 
 import com.example.lasya.SocialMediaApp.bean.PostBean;
 import com.example.lasya.SocialMediaApp.entity.Comment;
+import com.example.lasya.SocialMediaApp.exception.CommentNotFoundException;
+import com.example.lasya.SocialMediaApp.repository.CommentRepository;
 import com.example.lasya.SocialMediaApp.service.CommentService;
 import com.example.lasya.SocialMediaApp.service.PostService;
 import io.swagger.annotations.ApiOperation;
@@ -19,19 +21,23 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 
+@CrossOrigin
 @RestController
 public class CommentController {
     private final CommentService commentService;
 
     private final PostService postService;
 
+    private final CommentRepository commentRepository;
+
     private static final Logger logger = LoggerFactory.getLogger(CommentController.class);
 
     @Autowired
-    public CommentController(CommentService commentService, PostService postService) {
+    public CommentController(CommentService commentService, PostService postService, CommentRepository commentRepository) {
         super();
         this.commentService = commentService;
         this.postService = postService;
+        this.commentRepository = commentRepository;
     }
 
     @ApiOperation(value = "This API is used to get a comment based on a given postId")
@@ -52,6 +58,9 @@ public class CommentController {
     @ApiOperation(value = "This API is used to delete a comment based on a given commentId")
     @DeleteMapping("/api/v1/comment/delete/{commentId}")
     public ResponseEntity<String> deleteCommentById(@PathVariable int commentId) {
+        if(!commentRepository.existsByCommentId(commentId)){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Comment not found with the commentId: " + commentId);
+        }
         commentService.deleteByCommentId(commentId);
         return ResponseEntity.ok("Comment deleted successfully");
     }

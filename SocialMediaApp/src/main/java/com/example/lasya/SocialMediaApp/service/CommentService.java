@@ -15,4 +15,6 @@ public interface CommentService {
 
     void addCommentToPost(int postId, int userId, String text, Integer parentCommentId, LocalDateTime uploadTime);
 
+    boolean existsByCommentId(int commentId);
+
 }

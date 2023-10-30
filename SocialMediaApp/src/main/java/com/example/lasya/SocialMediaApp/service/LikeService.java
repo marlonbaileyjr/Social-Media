@@ -14,4 +14,6 @@ public interface LikeService {
     ResponseEntity<String> addLikeToPost(int userId, int postId, Timestamp uploadTime);
 
     ResponseEntity<String> deleteLikeById(int likeId);
+
+    public boolean checkIfLikeExists(int likeId);
 }

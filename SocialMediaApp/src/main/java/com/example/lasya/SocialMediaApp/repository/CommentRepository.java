@@ -30,5 +30,6 @@ public interface CommentRepository extends JpaRepository<Comment, Integer> {
     void addCommentToPost(@Param("postId") int postId, @Param("userId") int userId, @Param("text") String text,
                           @Param("parentCommentId") Integer parentCommentId, @Param("uploadTime") LocalDateTime uploadTime);
 
+    boolean existsByCommentId(int commentId);
 }
 

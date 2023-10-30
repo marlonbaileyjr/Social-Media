@@ -31,14 +31,23 @@ public class Friendship {
     @Column(name = "uploadTime")
     private LocalDateTime uploadTime;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "followerId", referencedColumnName = "userId", insertable = false, updatable = false)
     @JsonBackReference
     private User follower;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "followedId", referencedColumnName = "userId", insertable = false, updatable = false)
     @JsonBackReference
     private User followed;
+
+    @Override
+    public String toString() {
+        return "Friendship{" +
+                "friendshipId=" + friendshipId +
+                ", followerId=" + followerId +
+                ", followedId=" + followedId +
+                '}';
+    }
 
 }

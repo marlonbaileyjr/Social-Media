@@ -24,4 +24,6 @@ public interface LikeRepository extends JpaRepository<Like, Integer> {
     @Modifying
     @Query("DELETE FROM Like l WHERE l.likeId = :likeId")
     void deleteLikeById(@Param("likeId") int likeId);
+
+    boolean existsByLikeId(int likeId);
 }

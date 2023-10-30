@@ -71,7 +71,7 @@ public class User {
     }
 
     public Date getDateJoined() {
-        System.out.println("Getting dateJoined: " + dateJoined);
+//        System.out.println("Getting dateJoined: " + dateJoined);
         return dateJoined;
     }
 
@@ -80,6 +80,7 @@ public class User {
     }
 
     @OneToMany(mappedBy = "follower", fetch = FetchType.EAGER)
+    @JsonBackReference
     private List<Friendship> friendships;
 
     @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
@@ -97,5 +98,10 @@ public class User {
     public User(String userName, String password) {
         this.userName = userName;
         this.password = password;
+    }
+
+    @Override
+    public String toString() {
+        return "User{id=" + userId + ", username='" + userName + "', email='" + email + "'}";
     }
 }

@@ -50,5 +50,11 @@ public class CommentServiceImpl implements CommentService{
         logger.info("inside addCommentToPost method");
         commentRepository.addCommentToPost(postId, userId, text, parentCommentId, uploadTime);
     }
+
+    @Override
+    public boolean existsByCommentId(int commentId) {
+        return false;
+    }
+
 }
 

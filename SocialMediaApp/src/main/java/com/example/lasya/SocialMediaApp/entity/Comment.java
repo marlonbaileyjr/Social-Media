@@ -38,4 +38,10 @@ public class Comment {
     @JsonBackReference
     private User user;
 
+    @Override
+    public String toString() {
+        return "Comment{commentId=" + commentId + ", text='" + text + "', uploadTime=" + uploadTime + "}";
+    }
+
+
 }

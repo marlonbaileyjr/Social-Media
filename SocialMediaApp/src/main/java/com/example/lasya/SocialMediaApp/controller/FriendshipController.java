@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+@CrossOrigin
 @RestController
 public class FriendshipController {
     private final FriendshipService friendshipService;
@@ -29,7 +30,7 @@ public class FriendshipController {
 
     private final UserRepository userRepository;
 
-    Logger logger = LoggerFactory.getLogger(FriendshipController.class);
+    private static final Logger logger = LoggerFactory.getLogger(FriendshipController.class);
 
     @Autowired
     public FriendshipController(FriendshipService friendshipService, UserService userService, UserRepository userRepository) {
@@ -51,20 +52,17 @@ public class FriendshipController {
     @PostMapping("/api/v1/addFriendship")
     public ResponseEntity<String> addFriendship(@RequestBody Map<String, Object> requestBody) {
         try {
-            int followerId = (int) requestBody.get("followerId");
-            int followedId = (int) requestBody.get("followedId");
-            logger.info("before checking the existence of userid");
+            int followerId = (int) requestBody.get("follower");
+            int followedId = (int) requestBody.get("followed");
+            logger.info("followerId: " + followerId);
+            logger.info("followedId: " + followedId);
             if (!userRepository.existsById(followerId) || !userRepository.existsById(followedId)) {
-                logger.info("user ids do not exist in userRepository");
                 return ResponseEntity.badRequest().body("Invalid user IDs.");
             }
-
             String uploadTimeStr = (String) requestBody.get("uploadTime");
-            LocalDateTime uploadTime = LocalDateTime.parse(uploadTimeStr, DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"));
-
+            LocalDateTime uploadTime = LocalDateTime.parse(uploadTimeStr, DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'"));
             UserBean followerBean = userService.getUserById(followerId);
             UserBean followedBean = userService.getUserById(followedId);
-
             User follower = userService.getEntityFromBean(followerBean);
             User followed = userService.getEntityFromBean(followedBean);
             logger.info("followerId: {}", followerId);
@@ -77,9 +75,9 @@ public class FriendshipController {
             return ResponseEntity.badRequest().body("Invalid data types for followerId and followedId.");
         } catch (Exception e) {
             // Handle other exceptions if necessary.
+            logger.error("Error creating friendship", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred.");
         }
-
     }
 
     @GetMapping(value = "/api/friendship/{userId}")
@@ -119,14 +117,23 @@ public class FriendshipController {
     }
 
     @ApiOperation(value = "This API is used to delete followed users and following users")
-    @DeleteMapping("/api/v1/friendship/{followerUserId}/{followedUserId}")
+    @DeleteMapping("/api/v1/friendship/delete/{followerUserId}/{followedUserId}")
     public ResponseEntity<String> deleteFriendship(
             @PathVariable int followerUserId,
             @PathVariable int followedUserId) {
-        logger.info("followerUserId: " + followerUserId);
-        logger.info("followedUserId: " + followedUserId);
-        friendshipService.deleteByFollowerUserIdAndFollowedUserId(followerUserId, followedUserId);
-        return ResponseEntity.ok("Friendship deleted successfully");
+            logger.info("followerUserId: " + followerUserId);
+            logger.info("followedUserId: " + followedUserId);
+            // Check if the followerUserId and followedUserId exist in the database
+            Optional<User> followerUserOptional = userService.findById(followerUserId);
+            Optional<User> followedUserOptional = userService.findById(followedUserId);
+            if (!followerUserOptional.isPresent() || !followedUserOptional.isPresent()) {
+                // If either user doesn't exist, return an error response
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body("One or both of the users do not exist in the database.");
+            }
+            // Both users exist, proceed with deleting the friendship
+            friendshipService.deleteByFollowerUserIdAndFollowedUserId(followerUserId, followedUserId);
+            return ResponseEntity.ok("Friendship deleted successfully");
     }
 
 }
