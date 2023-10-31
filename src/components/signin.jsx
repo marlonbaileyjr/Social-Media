@@ -9,30 +9,27 @@ function SignIn() {
     const [password, setPassword] = useState('');
     const { setLoggedin, setUserID } = useContext(UserContext);
 
-    // const handleSignIn = async () => {
-    //     try {
-    //         const response = await axios.post('http://localhost:8080/api/v1/users/signin', {
-    //             userName: username,
-    //             password: password
-    //         });
-
-    //         if (response.status === 200) {
-    //             setLoggedin(true);
-    //             setUserID(response.data);  // Assuming the response contains only the user ID
-    //             alert('Signin successful');
-    //         }
-    //     } catch (error) {
-    //         if (error.response && error.response.status === 401) {
-    //             alert('Incorrect password.');
-    //         } else {
-    //             console.error('Error during sign-in:', error.message || error);
-    //         }
-    //     }
-    // };
     const handleSignIn = async () => {
-        setLoggedin(true)
-        setUserID(1)
-    }
+        try {
+            const response = await axios.post('http://localhost:8080/api/v1/users/signin', {
+                userName: username,
+                password: password
+            });
+
+            if (response.status === 200) {
+                setLoggedin(true);
+                setUserID(response.data);  // Assuming the response contains only the user ID
+                alert('Signin successful');
+            }
+        } catch (error) {
+            if (error.response && error.response.status === 401) {
+                alert('Incorrect password.');
+            } else {
+                console.error('Error during sign-in:', error.message || error);
+            }
+        }
+    };
+
     const handleSubmit = (e) => {
         e.preventDefault();
         handleSignIn();
