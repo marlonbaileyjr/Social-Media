@@ -7,14 +7,17 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
 public interface CommentRepository extends JpaRepository<Comment, Integer> {
+    @Modifying
     List<Comment> findByPostPostId(int postId);
 
     // Delete a comment by commentId
-    public void deleteByCommentId(int commentId);
+    @Modifying
+    void deleteByCommentId(int commentId);
 
     // Custom query method to edit a comment by its ID
     @Modifying
@@ -22,6 +25,11 @@ public interface CommentRepository extends JpaRepository<Comment, Integer> {
     void editComment(@Param("id") int id, @Param("text") String text);
 
     @Modifying
-    @Query(value = "INSERT INTO Comment c (c.post, c.text) SELECT p, :text FROM Post p WHERE p.postId = :postId", nativeQuery = true)
-    void addCommentToPost(@Param("postId") int postId, @Param("text") String text);
+    @Query(value = "INSERT INTO Comment (post_id, user_id, text, parent_comment_id, upload_time) " +
+            "VALUES (:postId, :userId, :text, :parentCommentId, :uploadTime)", nativeQuery = true)
+    void addCommentToPost(@Param("postId") int postId, @Param("userId") int userId, @Param("text") String text,
+                          @Param("parentCommentId") Integer parentCommentId, @Param("uploadTime") LocalDateTime uploadTime);
+
+    boolean existsByCommentId(int commentId);
 }
+

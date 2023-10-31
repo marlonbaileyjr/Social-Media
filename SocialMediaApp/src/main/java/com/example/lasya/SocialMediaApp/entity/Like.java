@@ -1,7 +1,11 @@
 package com.example.lasya.SocialMediaApp.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
+
+import java.time.LocalDateTime;
 
 @Data
 @Entity
@@ -21,14 +25,16 @@ public class Like {
     }
 
     @Column(name = "uploadTime")
-    private java.sql.Date uploadTime;
+    private LocalDateTime uploadTime;
 
     @ManyToOne
     @JoinColumn(name = "userId")
+    @JsonBackReference
     private User user;
 
     @ManyToOne
     @JoinColumn(name = "post_id")
+    @JsonBackReference
     private Post post;
 
 }

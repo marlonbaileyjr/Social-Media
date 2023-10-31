@@ -1,7 +1,12 @@
 package com.example.lasya.SocialMediaApp.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
+
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Data
@@ -24,17 +29,27 @@ public class Post {
 
     private String caption;
 
-    @Column(name = "uploadTime")
+    @Temporal(TemporalType.DATE)
+    @Column(name = "upload_time")
     private java.sql.Date uploadTime;
 
-    @ManyToOne
-    @JoinColumn(name = "userId")
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "user_id")
+    @JsonBackReference
     private User user;
 
-    @OneToMany(mappedBy = "post")
-    private List<Pictures> pictures;
+    @OneToMany(mappedBy = "post", fetch = FetchType.EAGER,  cascade = CascadeType.PERSIST)
+    @JsonBackReference
+    private List<Pictures> pictures = new ArrayList<>();
 
-    @OneToMany(mappedBy = "post")
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "post")
+    @JsonBackReference
     private List<Comment> comments;
+
+    @Override
+    public String toString() {
+        return "Post{postId=" + postId + ", caption='" + caption + "', uploadTime=" + uploadTime + "}";
+    }
+
 }
 

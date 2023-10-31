@@ -13,7 +13,7 @@ import org.springframework.web.reactive.result.method.annotation.ResponseEntityE
 @RestController
 public class FriendshipExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler({FriendshipNotFoundException.class})
-    public final ResponseEntity<String> handleUserNotFoundException(FriendshipNotFoundException ex, WebRequest request) {
+    public final ResponseEntity<String> handleFriendshipNotFoundException(FriendshipNotFoundException ex, WebRequest request) {
         return new ResponseEntity<String>(ex.getMessage(), HttpStatus.NOT_FOUND);
     }
 }

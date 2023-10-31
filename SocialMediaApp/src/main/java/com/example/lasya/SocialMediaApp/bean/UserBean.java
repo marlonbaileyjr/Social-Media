@@ -26,4 +26,12 @@ public class UserBean {
         // Default constructor with no arguments
     }
 
+    public UserBean(String userName) {
+        this.userName = userName;
+    }
+
+    public UserBean(int userId) {
+       this.userId = userId;
+    }
+
 }

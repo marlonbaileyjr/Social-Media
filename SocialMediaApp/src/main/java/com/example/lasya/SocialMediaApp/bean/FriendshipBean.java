@@ -9,7 +9,7 @@ public class FriendshipBean {
     private int friendshipId;
 
     @Nonnull
-    private int follower;
-    private int followed;
+    private int followerId;
+    private int followedId;
     private LocalDateTime uploadTime;
 }

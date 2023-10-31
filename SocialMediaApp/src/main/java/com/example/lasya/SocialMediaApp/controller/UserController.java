@@ -1,9 +1,9 @@
 package com.example.lasya.SocialMediaApp.controller;
 
 import com.example.lasya.SocialMediaApp.bean.UserBean;
+import com.example.lasya.SocialMediaApp.entity.User;
 import com.example.lasya.SocialMediaApp.exception.UserNotFoundException;
 import com.example.lasya.SocialMediaApp.service.UserService;
-import com.example.lasya.SocialMediaApp.service.UserServiceImpl;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
@@ -13,11 +13,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.sql.Date;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
-import java.util.OptionalInt;
 
+@CrossOrigin
 @RestController
 public class UserController {
 
@@ -55,6 +61,7 @@ public class UserController {
     public ResponseEntity<?> getUserById(@PathVariable int userId) {
         try {
             UserBean user = userService.getUserById(userId);
+            logger.info("user: " + user);
             return ResponseEntity.ok(user);
         } catch (UserNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
@@ -63,9 +70,17 @@ public class UserController {
     }
 
     @ApiOperation(value = "This API is used to delete a user by specifying an id")
-    @DeleteMapping(value = "/api/v1/users/{userId}")
-    public boolean deleteUserById(@PathVariable int userId) {
-        return userService.deleteUserById(userId);
+    @DeleteMapping(value = "/api/v1/users/delete/{userId}")
+    public ResponseEntity<String> deleteUserById(@PathVariable int userId) {
+        if ((userService.findById(userId)) == null) {
+            if (userService.deleteUserById(userId)) {
+                return ResponseEntity.ok("User deleted successfully");
+            } else {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while deleting the user.");
+            }
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User with ID " + userId + " not found in the database.");
+        }
     }
 
     @ApiOperation(value = "This API is used to search a user by firstName, lastName, userName or email attributes")
@@ -79,10 +94,18 @@ public class UserController {
 
     @ApiOperation(value = "This API is used to sign in a user")
     @PostMapping(value = "/api/v1/users/signin")
-    public UserBean signInUser(@RequestBody Map<String, String> credentials){
+    public ResponseEntity<String> signInUser(@RequestBody Map<String, String> credentials){
         String username = credentials.get("userName");
         String password = credentials.get("password");
-        return userService.signInUser(username, password);
+        String authenticationResult = userService.signInUser(username, password);
+
+        if (authenticationResult != null && authenticationResult.matches("\\d+")) {
+            // Authentication was successful
+            return ResponseEntity.ok(authenticationResult);
+        } else {
+            // Authentication failed, return an error message
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(authenticationResult);
+        }
     }
 
     @ApiOperation(value = "This API is used to update password field by providing the user email field")
@@ -102,9 +125,18 @@ public class UserController {
     }
 
     @ApiOperation(value = "This API is used to update profile picture field by providing the user id field")
-    @PutMapping(value = "/api/v1/users/updateProfilePicture")
-    public UserBean updateProfilePicture(@PathVariable int userId, @PathVariable byte[] newProfilePicture){
-        return userService.updateProfilePicture(userId, newProfilePicture);
+    @PutMapping(value = "/api/v1/users/updateProfilePicture/{userId}")
+    public ResponseEntity<UserBean> updateProfilePicture(
+            @PathVariable int userId,
+            @RequestParam("profilePicture") MultipartFile newProfilePicture
+    ) {
+        try {
+            byte[] newProfilePictureBytes = newProfilePicture.getBytes();
+            UserBean updatedUser = userService.updateProfilePicture(userId, newProfilePictureBytes);
+            return ResponseEntity.ok(updatedUser);
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
     }
 
     @ApiOperation(value = "This API is used to update firstName and lastname fields by providing the user id field")

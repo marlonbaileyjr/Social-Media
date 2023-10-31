@@ -3,9 +3,13 @@ package com.example.lasya.SocialMediaApp.service;
 import com.example.lasya.SocialMediaApp.entity.Friendship;
 import com.example.lasya.SocialMediaApp.entity.User;
 
+import java.sql.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface FriendshipService {
+
+    Friendship addFriendship(User follower, User followed, LocalDateTime uploadTime);
 
     List<Friendship> findByFollowedUserId(int userId);
 

@@ -7,5 +7,5 @@ import java.time.LocalDateTime;
 public class LikeBean {
 
     private int likeId;
-    private LocalDateTime likeTime;
+    private LocalDateTime uploadTime;
 }
