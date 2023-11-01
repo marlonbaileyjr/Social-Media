@@ -27,13 +27,13 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
     @Modifying
     @Query(value = "INSERT INTO Post(caption, upload_time, user_id) " +
             "VALUES (:caption, :uploadTime, :userId)", nativeQuery = true)
-    void addPost(@Param("caption") String caption,
+    Post addPost(@Param("caption") String caption,
                  @Param("uploadTime") Date uploadTime,
                  @Param("userId") int userId);
 
     @Modifying
     @Query(value = "INSERT INTO Pictures(media, type, order_int, upload_time, post_id) VALUES (?, ?, ?, ?, ?)", nativeQuery = true)
-    void addPicture(byte[] media, String type, int order, Date uploadTime, int post);
+    Post addPicture(byte[] media, String type, int order, Date uploadTime, int post);
 
     @Modifying
     @Query("DELETE FROM Post p WHERE p.postId = :postId")
@@ -45,5 +45,8 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
 
     @Query("SELECT pic FROM Post p JOIN p.pictures pic WHERE p.postId = :postId ORDER BY pic.pictureId DESC")
     List<Pictures> findLatestPictureByPostId(@Param("postId") int postId);
+
+    @Query(value = "SELECT * FROM posts WHERE caption = :caption AND upload_time = :uploadTime AND user_id = :userId", nativeQuery = true)
+    Post findPost(@Param("caption") String caption, @Param("uploadTime") Date uploadTime, @Param("userId") int userId);
 }
 

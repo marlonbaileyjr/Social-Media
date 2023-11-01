@@ -7,6 +7,7 @@ import com.example.lasya.SocialMediaApp.entity.Post;
 import com.example.lasya.SocialMediaApp.entity.User;
 import com.example.lasya.SocialMediaApp.exception.PostNotFoundException;
 import com.example.lasya.SocialMediaApp.repository.PostRepository;
+import com.example.lasya.SocialMediaApp.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,12 +23,15 @@ import java.util.stream.Collectors;
 public class PostServiceImpl implements PostService {
     private static final Logger logger = LoggerFactory.getLogger(PostServiceImpl.class);
     private final PostRepository postRepository;
+
+    private final UserRepository userRepository;
     private final UserService userService;
 
     @Autowired
-    public PostServiceImpl(PostRepository postRepository, UserService userService) {
+    public PostServiceImpl(PostRepository postRepository, UserRepository userRepository, UserService userService) {
         super();
         this.postRepository = postRepository;
+        this.userRepository = userRepository;
         this.userService = userService;
     }
 
@@ -98,13 +102,25 @@ public class PostServiceImpl implements PostService {
 
     @Override
     @Transactional
-    public void addPost(String caption, Date uploadTime, UserBean user) {
+    public Post addPost(String caption, Date uploadTime, UserBean userBean) {
         if (uploadTime == null) {
             // Handle the case where uploadTime is null
             throw new IllegalArgumentException("uploadTime cannot be null");
         }
-        logger.info("Insert Data: caption={}, uploadTime={}, userId={}", caption, uploadTime, user.getUserId());
-        postRepository.addPost(caption, uploadTime, user.getUserId());
+
+        // Convert the UserBean to a User entity, assuming User has a constructor that accepts UserBean
+        User user = new User(userBean.getUserId());
+
+        logger.info("Insert Data: caption={}, uploadTime={}, userId={}", caption, uploadTime, user); // Assuming the user has a method getId() to retrieve the user ID
+        Post newPost = new Post();
+        newPost.setCaption(caption);
+        newPost.setUploadTime(uploadTime);
+        newPost.setUser(user);
+
+        // Save the new Post entity to the database
+        Post savedPost = postRepository.save(newPost);
+
+        return savedPost;
     }
 
     private java.sql.Date convertToSqlDate(Date date) {
