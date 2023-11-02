@@ -1,17 +1,28 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import Modal from 'react-modal';
-import '../css/updateProfile.css';
+import { UserContext } from '../userContext';
 
-Modal.setAppElement('#root'); // this line should be in your root component instead
+import '../css/updateProfile.css';
+import { updateUsernameAndBio } from '../functions/userFunctions';
 
 function BioAndUsernameModal({ isOpen, onClose, initialBio = '', initialUsername = '' }) {
+  const { userID } = useContext(UserContext);
   const [bio, setBio] = useState(initialBio);
   const [username, setUsername] = useState(initialUsername);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
-  const updateProfile = () => {
-      console.log("Updated profile:", bio, username);
-      // You might want to do something (e.g., API call) before closing
-      onClose(); // call the passed onClose method
+  const updateProfile = async () => {
+    setLoading(true);
+    try {
+      // Assuming updateUsernameAndBio is an async function
+      await updateUsernameAndBio(userID, username, bio);
+      onClose(); // Close the modal on success
+    } catch (error) {
+      console.error('Error updating profile:', error);
+      setError('Failed to update profile. Please try again later.'); // Set error message to state
+    }
+    setLoading(false);
   };
 
   const customStyles = {
@@ -28,26 +39,34 @@ function BioAndUsernameModal({ isOpen, onClose, initialBio = '', initialUsername
   return (
     <Modal
       isOpen={isOpen}
-      onRequestClose={onClose} // calling the external close handler
+      onRequestClose={onClose} // This should only work when not loading
       style={customStyles}
+      shouldCloseOnOverlayClick={!loading} // Prevent modal close when updating
     >
       <h2>Update Profile</h2>
+      {error && <div className="error-message">{error}</div>}
       <div>
-          <label>Username: </label>
-          <input
-              value={username}
-              onChange={e => setUsername(e.target.value)}
-          />
+        <label>Username: </label>
+        <input
+          value={username}
+          onChange={e => setUsername(e.target.value)}
+          disabled={loading}
+        />
       </div>
       <div>
-          <label>Bio: </label>
-          <textarea
-              value={bio}
-              onChange={e => setBio(e.target.value)}
-          />
+        <label>Bio: </label>
+        <textarea
+          value={bio}
+          onChange={e => setBio(e.target.value)}
+          disabled={loading}
+        />
       </div>
-      <button onClick={updateProfile}>Update</button>
-      <button onClick={onClose}>Close</button> {/* calling the external close handler */}
+      <button onClick={updateProfile} disabled={loading}>
+        {loading ? 'Updating...' : 'Update'}
+      </button>
+      <button onClick={onClose} disabled={loading}>
+        Close
+      </button>
     </Modal>
   );
 }

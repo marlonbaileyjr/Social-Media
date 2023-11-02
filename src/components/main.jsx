@@ -5,20 +5,35 @@ import ScrollScreen from '../props/ScrollScreen';
 import { getPostsFromFriends, getAllPosts } from '../functions/postFunctions';
 
 function Main() {
+  
   const { userID } = useContext(UserContext);
   const [currentItems, setCurrentItems] = useState([]); // Initialize with an empty array
   const [selectedOption, setSelectedOption] = useState('Following');
-
-  useEffect(() => {
-    // Use the userID to fetch the appropriate post data based on the selected option
+console.log("currrent", currentItems)
+useEffect(() => {
+  const fetchData = async () => {
     if (selectedOption === 'Following') {
-      const postsFromFriends = getPostsFromFriends(userID);
-      setCurrentItems(postsFromFriends);
+      try {
+        const postsFromFriends = await getPostsFromFriends(userID);
+        setCurrentItems(postsFromFriends);
+      } catch (error) {
+        console.error('Error fetching posts from friends:', error);
+        setCurrentItems([]); // or set to a default value or state
+      }
     } else if (selectedOption === 'Discover') {
-      const allPosts = getAllPosts();
-      setCurrentItems(allPosts);
+      try {
+        const allPosts = await getAllPosts();
+        setCurrentItems(allPosts);
+      } catch (error) {
+        console.error('Error fetching all posts:', error);
+        setCurrentItems([]); // or set to a default value or state
+      }
     }
-  }, [userID, selectedOption]);
+  };
+
+  fetchData();
+}, [userID, selectedOption]); // Dependencies array
+
 
   const handleClick = (option) => {
     setSelectedOption(option);

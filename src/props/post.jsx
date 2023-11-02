@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Slider from 'react-slick';
 import '../css/post.css';
 import { useNavigate } from 'react-router-dom';
@@ -19,14 +19,50 @@ class Comment {
   }
 }
 
+
+
 function Post({ postId, caption, userId }) {
   const navigate = useNavigate();
   const [showComments, setShowComments] = useState(false);
+  const [user, setUser] = useState('');
+  const [pictures, setPictures] = useState([]);
+  const [comments, setComments] = useState([]);
 
-  const user = getUserById(userId); // Use getUserById to get user data
-  const pictures = getPicturesFromPost(postId); // Use getPicturesFromPost to get pictures
-  const comments = getComments(postId); // Use getComments to get comments
-  console.log('comments',comments)
+  useEffect(() => {
+    const fetchUserAndSetState = async (userId) => {
+      try {
+        const user = await getUserById(userId);
+        setUser(user);
+      } catch (error) {
+        console.error('An error occurred while fetching the user:', error);
+        setUser('Failed to load user data');
+      }
+    };
+
+    fetchUserAndSetState(userId);
+  }, [userId]);
+
+  useEffect(() => {
+    const fetchPicturesAndComments = async () => {
+      try {
+        const pics = await getPicturesFromPost(postId);
+        setPictures(pics);
+      } catch (error) {
+        console.error('An error occurred while fetching pictures:', error);
+      }
+
+      try {
+        const comms = await getComments(postId);
+        setComments(processComments(comms)); // Assuming processComments is synchronous
+      } catch (error) {
+        console.error('An error occurred while fetching comments:', error);
+      }
+    };
+
+    fetchPicturesAndComments();
+  }, [postId]);
+
+ 
 
   const navigateToProfile = (userid) => {
     navigate(`/profile/${userid}`);
@@ -45,7 +81,7 @@ function Post({ postId, caption, userId }) {
       <div className="profile-bar" onClick={() => navigateToProfile(user.userId)}>
         {user && user.profilePicture && (
           <img
-            src={user.profilePicture}
+            src={`data:image/jpeg;base64,${user.profilePicture}`}
             alt="User Profile"
             className="user-profile-picture"
           />
@@ -102,18 +138,15 @@ function CommentsDropdown({ comments }) {
 const processComments = (comments) => {
   const commentMap = new Map();
 
-  // First, create a mapping of comments by their commentId
   comments.forEach((commentData) => {
     const comment = new Comment(commentData);
-    commentMap.set(comment.commentId, comment);
+    commentMap.set(comment.commentID, comment); // Use the correct property name here
   });
 
-  // Now, identify top-level comments by checking if they have a parentCommentId that exists in the mapping
   const topLevelComments = comments.filter(
-    (commentData) => !commentMap.has(commentData.parentCommentId)
+    (commentData) => !commentMap.has(commentData.parentCommentID) // And here
   );
 
-  // For top-level comments, add replies by traversing the comment tree
   topLevelComments.forEach((topLevelComment) => {
     addRepliesToComment(topLevelComment, commentMap);
   });
@@ -121,11 +154,11 @@ const processComments = (comments) => {
   return topLevelComments;
 };
 
-// A recursive function to add replies to a comment
 const addRepliesToComment = (comment, commentMap) => {
-  comment.replies = commentMap.get(comment.commentId)?.replies || [];
+  comment.replies = commentMap.get(comment.commentID)?.replies || []; // Correct property name here as well
   comment.replies.forEach((reply) => addRepliesToComment(reply, commentMap));
 };
+
 
 function CommentComponent({ comment }) {
   const [showReplies, setShowReplies] = useState(false);

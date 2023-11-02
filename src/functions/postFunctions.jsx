@@ -8,7 +8,7 @@ import post2 from '../img/post2.jpeg'
 // import post4 from '../img/post4.jpeg'
 // import post5 from '../img/post5.jpeg'
 
-import {getFollowers, getFollowed, deleteFriendship, addFriendship} from './friendshipFunctions'
+import { getFollowed} from './friendshipFunctions'
 
 export const posts = [
     {
@@ -108,11 +108,24 @@ export const posts = [
     return posts;
   }
   
-  function getPostsFromFriends(userId) {
-    // Implement logic to get posts from friends
-    const userFollowed = getFollowed(userId);
-    const friendPosts = posts.filter(post => userFollowed.includes(post.post.userId));
-    return friendPosts;
+  async function getPostsFromFriends(userId) {
+    try {
+      // Await the async call to getFollowed to resolve
+      const userFollowed = await getFollowed(userId);
+      console.log(userFollowed)
+  
+      // Assuming posts is an array of posts available in the scope and
+      // each post has a property like post.userId to identify the posting user
+      const friendPosts = posts.filter(post => 
+        userFollowed.some(followedUser => followedUser.followedId === post.userId)
+      );
+  
+      return friendPosts;
+    } catch (error) {
+      // Handle any errors that occur during the fetch
+      console.error('Failed to get posts from friends:', error);
+      return []; // return an empty array or handle the error as appropriate
+    }
   }
   
   function getPicturesFromPost(postId) {
@@ -152,8 +165,4 @@ export const posts = [
     getPicturesFromPost,
     addPost,
     deletePost,
-    getFollowers,
-    getFollowed,
-    deleteFriendship,
-    addFriendship,
   };

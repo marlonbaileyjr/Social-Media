@@ -1,40 +1,51 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Modal from 'react-modal';
 import { useNavigate } from 'react-router-dom';
+import { searchUser } from '../functions/userFunctions';
+import '../css/updateProfile.css';
 
 function UserSearchModal({ isOpen, onClose }) {
     const navigate = useNavigate();
     const [searchTerm, setSearchTerm] = useState('');
     const [results, setResults] = useState([]);
+    const [isSearching, setIsSearching] = useState(false);
 
-    // Simulated search function (You would replace this with your API call)
-    const performSearch = (query) => {
-        // Simulated data, replace with actual data from API
-        const data = [
-            { username: 'john_doe', firstName: 'John', lastName: 'Doe' },
-            { username: 'jane_doe', firstName: 'Jane', lastName: 'Doe' },
-            // ... more users
-        ];
+    useEffect(() => {
+        const performSearch = async () => {
+            if (searchTerm.trim()) {
+                setIsSearching(true);
+                try {
+                    const data = await searchUser(searchTerm);
+                    setResults(data); 
+                } catch (error) {
+                    console.error('Search failed:', error);
+                } finally {
+                    setIsSearching(false);
+                }
+            } else {
+                setResults([]);
+            }
+        };
+        performSearch();
+    }, [searchTerm]);
 
-        setResults(data.filter(user => user.username.includes(query)));
+    const navigateToUserProfile = (userId) => {
+        navigate(`/profile/${userId}`);
+        onClose()
     };
-
-    const navigateToUserProfile = (userID) => {
-        navigate(`/profile/${userID}`);
-      };
 
     const customStyles = {
         content: {
-          top: '50%',
-          left: '50%',
-          right: 'auto',
-          bottom: 'auto',
-          marginRight: '-50%',
-          transform: 'translate(-50%, -50%)',
-          width: '60%', 
-          height: '70%'
+            top: '50%',
+            left: '50%',
+            right: 'auto',
+            bottom: 'auto',
+            marginRight: '-50%',
+            transform: 'translate(-50%, -50%)',
+            width: '60%',
+            height: '70%'
         },
-      };
+    };
 
     return (
         <div>
@@ -49,15 +60,21 @@ function UserSearchModal({ isOpen, onClose }) {
                         onChange={e => setSearchTerm(e.target.value)}
                         placeholder="Search for a user..."
                     />
-                    <button onClick={() => performSearch(searchTerm)}>Search</button>
+                    <button onClick={() => setSearchTerm(searchTerm)} disabled={isSearching}>
+                        {isSearching ? 'Searching...' : 'Search'}
+                    </button>
                 </div>
                 <div className="search-results">
-                    {results.map(user => (
-                        <div key={user.username} className="user-result">
-                            <strong>{user.username}</strong>
-                            <p>{user.firstName} {user.lastName}</p>
-                        </div>
-                    ))}
+                    {results.length > 0 ? (
+                        results.map(user => (
+                            <div key={user.username} className="user-result" onClick={() => navigateToUserProfile(user.userId)}>
+                                <strong>{user.username}</strong>
+                                <p>{user.firstName} {user.lastName}</p>
+                            </div>
+                        ))
+                    ) : (
+                        <p>No users found.</p>
+                    )}
                 </div>
                 <button onClick={onClose}>Close</button>
             </Modal>

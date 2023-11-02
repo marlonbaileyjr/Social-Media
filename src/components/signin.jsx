@@ -1,7 +1,7 @@
 import React, { useState, useContext } from 'react';
 import { Link } from 'react-router-dom';
 import { UserContext } from '../userContext'; // Import your UserContext
-import axios from 'axios';  // Import axios
+import { SignInUser } from '../functions/userFunctions';
 import '../css/signin.css';
 
 function SignIn() {
@@ -11,24 +11,23 @@ function SignIn() {
 
     const handleSignIn = async () => {
         try {
-            const response = await axios.post('http://localhost:8080/api/v1/users/signin', {
-                userName: username,
-                password: password
-            });
-
-            if (response.status === 200) {
-                setLoggedin(true);
-                setUserID(response.data);  // Assuming the response contains only the user ID
-                alert('Signin successful');
-            }
+          // Call the imported SignInUser function
+          const data = await SignInUser(username, password);
+          console.log(data)
+      
+          // If the call was successful, update the logged-in state and user ID
+          setLoggedin(true);
+          setUserID(data); // Adjust based on the actual structure of your response data
+      
+          alert('Signin successful');
         } catch (error) {
-            if (error.response && error.response.status === 401) {
-                alert('Incorrect password.');
-            } else {
-                console.error('Error during sign-in:', error.message || error);
-            }
+          if (error.response && error.response.status === 401) {
+            alert('Incorrect password.');
+          } else {
+            console.error('Error during sign-in:', error.message || error);
+          }
         }
-    };
+      };
 
     const handleSubmit = (e) => {
         e.preventDefault();

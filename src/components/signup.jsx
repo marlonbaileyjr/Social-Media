@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import axios from 'axios';
+import { SignUpUser } from '../functions/userFunctions';
 
 function SignUp() {
     const [firstName, setFirstName] = useState('');
@@ -12,26 +12,28 @@ function SignUp() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
         try {
-            const response = await axios.post('http://localhost:8080/api/v1/users/signup', {
+            // Call the SignUpUser function and wait for the response
+            const userData = {
                 firstName,
                 lastName,
-                userName: username,
+                username,
                 email,
                 password,
-                dateOfBirth: dob,
-                dateJoined: new Date().toISOString().slice(0, 10)
-            });
+                dob
+            };
 
-            if (response.status === 200 || response.status === 201) {
-                alert('Registration successful');
+            // Assuming the SignUpUser function returns a Promise
+            const response = await SignUpUser(userData);
+
+            if (response.success) {
+                alert("Signed Up Successfully")
             } else {
-                alert('Registration failed');
+                // Handle failure (e.g., show error message to the user)
+                alert('Sign-up failed:', response.message);
             }
-
         } catch (error) {
-            console.error('Error during registration:', error);
+            alert('Sign-up error:', error);
         }
     };
 

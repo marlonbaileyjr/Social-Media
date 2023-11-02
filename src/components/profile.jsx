@@ -1,8 +1,10 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
+import profileHolder from '../img/download.jpeg'
 import '../css/profile.css';
 import { useParams } from 'react-router-dom';
 import FirstAndLastNameModal from '../props/FirstandLastNameModal';
 import BioAndUsernameModal from '../props/UsernameAndBioModal';
+import ProfilePictureModal from '../props/updateProfilePictureModal';
 import noImg from '../img/NOIMG.jpeg'
 import { UserContext } from '../userContext';
 import {getPostById, getPicturesFromPost, getPostByPostId} from '../functions/postFunctions'; 
@@ -22,74 +24,139 @@ function ProfilePage(props) {
   const [followedCount, setFollowedCount] = useState(0);
   const [isFollowing, setIsFollowing] = useState(false);
   const [isBioModalOpen, setIsBioModalOpen] = useState(false);
+  const [isPictureModalOpen, setIsPictureModalOpen] = useState(false);
   const [isNameModalOpen, setIsNameModalOpen] = useState(false);
 
   function handleBioIconClick() {
     setIsBioModalOpen(true);
 }
 
-function handleNameIconClick() {
-    setIsNameModalOpen(true);
+function handlePictureIconClick() {
+  setIsPictureModalOpen(true);
 }
 
-function closeBioModal() {
-    setIsBioModalOpen(false);
+function closePictureModal() {
+  setIsPictureModalOpen(false);
+}
+
+function handleNameIconClick() {
+    setIsNameModalOpen(true);
 }
 
 function closeNameModal() {
     setIsNameModalOpen(false);
 }
+const fetchUserDetails = useCallback(async () => {
+  try {
+    const userData = await getUserById(Number(paramUserId));
+    setUser(userData);
+    console.log(userData);
+  } catch (error) {
+    console.error('Error fetching user data:', error);
+  }
+}, [paramUserId]);
 
+function closeModalAndRefresh() {
+  setIsBioModalOpen(false);
+  setIsNameModalOpen(false);
+  setIsPictureModalOpen(false)
+  setIsModalOpen(false);
+  fetchUserDetails(); // Re-fetch user data when modal closes
+}
 
   const canEdit = Number(paramUserId) === contextUserId;
 
   useEffect(() => {
-    const userData = getUserById(Number(paramUserId));
-    setUser(userData);
+    fetchUserDetails();
 
-    const userPostsData = getPostById(Number(paramUserId));  
-    if (userPostsData) {
-      setUserPosts(getPicturesFromPost(userPostsData.post.postId));
-    }
-
+    const fetchUser = async () => {
+      try {
+        const userData = await getUserById(Number(paramUserId));
+        setUser(userData);
+        console.log(userData);
+      } catch (error) {
+        console.error('Error fetching user data:', error);
+      }
+    };
+  
+    fetchUser();
+  
+    const fetchUserPosts = async () => {
+      try {
+        const userPostsData = await getPostById(Number(paramUserId));
+        if (userPostsData) {
+          setUserPosts(getPicturesFromPost(userPostsData.post.postId));
+        }
+      } catch (error) {
+        console.error('Error fetching user posts:', error);
+      }
+    };
+  
+    fetchUserPosts();
+  
     // Fetch followers count
     const fetchFollowers = async () => {
-      const followers = await getFollowers(Number(paramUserId));
-      setFollowersCount(followers.length);
+      try {
+        const followers = await getFollowers(Number(paramUserId));
+        setFollowersCount(followers.length);
+      } catch (error) {
+        console.error('Error fetching followers:', error);
+      }
     };
-
+  
     // Fetch followed count
     const fetchFollowed = async () => {
-      const followed = await getFollowed(Number(paramUserId));
-      setFollowedCount(followed.length);
+      try {
+        const followed = await getFollowed(Number(paramUserId));
+        setFollowedCount(followed.length);
+      } catch (error) {
+        console.error('Error fetching followed:', error);
+      }
     };
+  
     const checkFollowingStatus = async () => {
-      const followers = await getFollowers(Number(paramUserId));
-      const isUserFollowing = followers.some(follower => follower.userId === contextUserId);
-      setIsFollowing(isUserFollowing);
+      try {
+        const followers = await getFollowers(Number(paramUserId));
+        const isUserFollowing = followers.some(follower => follower.userId === contextUserId);
+        setIsFollowing(isUserFollowing);
+      } catch (error) {
+        console.error('Error checking following status:', error);
+      }
     };
     
-    checkFollowingStatus();
     fetchFollowers();
     fetchFollowed();
-
-  }, [paramUserId, contextUserId]);
+    checkFollowingStatus();
+  
+  }, [paramUserId, contextUserId, fetchUserDetails]);
+  
 
   const handleFollow = async () => {
-    await addFriendship(contextUserId, Number(paramUserId));
-    setIsFollowing(true);
-    // Optionally: Update followers count after following
-    const updatedFollowers = await getFollowers(Number(paramUserId));
-    setFollowersCount(updatedFollowers.length);
+    try {
+      await addFriendship(contextUserId, Number(paramUserId));
+      setIsFollowing(true);
+      // Optionally: Update followers count after following
+      const updatedFollowers = await getFollowers(Number(paramUserId));
+      setFollowersCount(updatedFollowers.length);
+    } catch (error) {
+      console.error('Error while following user:', error);
+      // Handle the error appropriately, maybe show a message to the user.
+    }
   };
-
+  
   const handleUnfollow = async () => {
-    await deleteFriendship(contextUserId, Number(paramUserId));
-    setIsFollowing(false);
-    // Optionally: Update followers count after unfollowing
-    const updatedFollowers = await getFollowers(Number(paramUserId));
-    setFollowersCount(updatedFollowers.length);
+    try {
+      await deleteFriendship(contextUserId, Number(paramUserId));
+      setIsFollowing(false);
+      // Optionally: Update followers count after unfollowing
+      const updatedFollowers = await getFollowers(Number(paramUserId));
+      setFollowersCount(updatedFollowers.length);
+    } catch (error) {
+      console.error('Error while unfollowing user:', error);
+      // Handle the error appropriately, maybe show a message to the user.
+    }
   };
+  
 
   function handlePostClick(post) {
     setSelectedPost(post);
@@ -108,9 +175,10 @@ function closeNameModal() {
   return (
     <div className="profile-page">
       <div className="profile-header">
-        <img src={user.profilePicture} alt={`${user.username}'s profile`} className="profile-pic" />
+      <img src={user.profilePicture ? `data:image/jpeg;base64,${user.profilePicture}` : profileHolder} alt={`${user.userName}'s profile`} className="profile-pic" />
+
         <h1>
-          {user.userName}
+          {user.userName} {canEdit && <i className="fas fa-edit" onClick={handlePictureIconClick}></i>}
         </h1>
         <p>
             {user.bio} {canEdit && <i className="fas fa-edit" onClick={handleBioIconClick}></i>}
@@ -122,11 +190,11 @@ function closeNameModal() {
                 <>
                     {isBioModalOpen && (
                         <BioAndUsernameModal 
-                            isOpen={isBioModalOpen}
-                            onClose={closeBioModal}
-                            initialBio={user.bio}
-                            initialUsername={user.userName}
-                        />
+                        isOpen={isBioModalOpen}
+                        onClose={closeModalAndRefresh} // Changed from closeBioModal to closeModalAndRefresh
+                        initialBio={user.bio}
+                        initialUsername={user.userName}
+                      />
                     )}
 
                     {isNameModalOpen && (
@@ -135,6 +203,14 @@ function closeNameModal() {
                             onClose={closeNameModal}
                             initialFirstName={user.firstName}
                             initialLastName={user.lastName}
+                        />
+                    )}
+
+                    {isPictureModalOpen && (
+                        <ProfilePictureModal 
+                            isOpen={isPictureModalOpen}
+                            onClose={closePictureModal}
+                            Picture={user.profilePicture ? `data:image/jpeg;base64,${user.profilePicture}` : profileHolder}
                         />
                     )}
                 </>
