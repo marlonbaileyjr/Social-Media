@@ -67,7 +67,7 @@ public class PostController {
             @ApiResponse(code = 502, message = "Bad Gateway")
     })
     @PostMapping(value = "/api/v1/posts")
-    public ResponseEntity<?> addPost(@RequestBody Map<String, Object> request) {
+    public ResponseEntity<Post> addPost(@RequestBody Map<String, Object> request) {
         if (request.containsKey("caption") && request.containsKey("uploadTime") && request.containsKey("userId")) {
             try {
                 String caption = (String) request.get("caption");
@@ -77,16 +77,16 @@ public class PostController {
                 java.sql.Date uploadTime = new java.sql.Date(instant.toEpochMilli());
                 UserBean user = userService.getUserById(userId);
                 logger.debug("Received JSON: {}", request);
-                postService.addPost(caption, uploadTime, user);
+                Post createdPost = postService.addPost(caption, uploadTime, user);
+                return new ResponseEntity<>(createdPost, HttpStatus.CREATED);
             } catch (DateTimeParseException | ClassCastException e) {
                 e.printStackTrace();
-                return new ResponseEntity<>("Invalid request format", HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             }
         } else {
             // Handle missing parameters
-            return new ResponseEntity<>("Missing parameters", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-        return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     private java.sql.Date convertToSqlDate(Date date) {

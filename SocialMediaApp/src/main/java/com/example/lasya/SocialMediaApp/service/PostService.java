@@ -22,7 +22,7 @@ public interface PostService {
 
     public List<byte[]> getMediaFromPost(int postId);
 
-    void addPost(String caption, Date uploadTime, UserBean user);
+    Post addPost(String caption, Date uploadTime, UserBean user);
 
     Pictures addPicture(byte[] media, String type, int order, Date uploadTime, Post post);
 
