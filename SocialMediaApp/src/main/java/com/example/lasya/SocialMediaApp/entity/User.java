@@ -2,6 +2,7 @@ package com.example.lasya.SocialMediaApp.entity;
 
 import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.NonNull;
 import lombok.Data;
@@ -46,6 +47,7 @@ public class User {
     private String password;
 
     @Column(name = "dateOfBirth")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private Date dateOfBirth;
 
     @Column(name = "dateJoined",  nullable = false)
