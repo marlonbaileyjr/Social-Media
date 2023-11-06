@@ -1,12 +1,12 @@
-import React, { useContext, useState } from 'react';
+import React, { useState } from 'react';
 import Modal from 'react-modal';
 import { updateProfilePicture } from '../functions/userFunctions';
 import '../css/updateProfile.css';
-import { UserContext } from '../userContext';
+import { Users } from '../hooks/userHooks';
 
 function ProfilePictureModal({ isOpen, onClose, Picture }) {
     console.log("picture", Picture)
-  const { userID } = useContext(UserContext);
+  const { userID } = Users();
   const [loading, setLoading] = useState(false);
   const [newPicture, setNewPicture] = useState(null);
 

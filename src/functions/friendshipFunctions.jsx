@@ -1,6 +1,6 @@
 import axios from "axios";
 
-    async function getFollowers(userId) {
+    async function getFollowed(userId) {
       try {
         const url = `http://localhost:8080/api/friendship/${userId}`;
         const response = await axios.get(url);
@@ -11,7 +11,7 @@ import axios from "axios";
       }
     }
     
-    async function getFollowed(userId) {
+    async function getFollowers(userId) {
       try {
         const response = await axios.get(`http://localhost:8080/api/friendship/${userId}`);
         return response.data;
@@ -33,11 +33,23 @@ import axios from "axios";
     
     async function addFriendship(followerId, followedId) {
       const apiUrl = 'http://localhost:8080/api/v1/addFriendship';
-  
+
+      
+
       try {
+        const now = new Date();
+
+        let formattedDate = now.getFullYear() + '-' +
+        ('0' + (now.getMonth() + 1)).slice(-2) + '-' + 
+        ('0' + now.getDate()).slice(-2) + 'T' +
+        ('0' + now.getHours()).slice(-2) + ':' +
+        ('0' + now.getMinutes()).slice(-2) + ':' +
+        ('0' + now.getSeconds()).slice(-2) + 'Z';
+        
         const response = await axios.post(apiUrl,{
           follower: followerId,
-          followed:followedId
+          followed:followedId,
+          uploadTime: formattedDate
       });
         console.log('Add Friendship Response:', response.data);
       } catch (error) {

@@ -1,11 +1,11 @@
-import React, { useContext, useState } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../css/header.css';
-import { UserContext } from '../userContext';
+import { Users } from '../hooks/userHooks';
 import UserSearchModal from '../props/searchUserModal';
 
 function Header() {
-  const { userID, setLoggedin } = useContext(UserContext);
+  const { userID, setLoggedin } = Users();
   const navigate = useNavigate();
 
   const [menuVisible, setMenuVisible] = useState(false);

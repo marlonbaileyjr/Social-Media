@@ -1,8 +1,13 @@
 import React, { useState } from 'react';
 import '../css/ScrollScreen.css';
 import Post from './post';
+import {useLikes} from '../hooks/likeHooks'
+import {useComments} from '../hooks/commentHooks'
+
 
 function ScrollScreen({ items = [] }) { 
+  const {comments} = useComments()
+  const {likes} = useLikes()
   const [activeIndex, setActiveIndex] = useState(0);
   const [startY, setStartY] = useState(null);
   const [isDragging, setIsDragging] = useState(false);
@@ -78,9 +83,15 @@ function ScrollScreen({ items = [] }) {
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
     >
-        {items.map((item, index) => (
-          <div key={item.post.postId} className={`scroll-item ${index === activeIndex ? 'active' : ''}`}>
-              <Post postId={item.post.postId} caption={item.post.caption} userId={item.post.userId}/>
+       {items.map((item, index) => (
+          <div key={item.postId} className={`scroll-item ${index === activeIndex ? 'active' : ''}`}>
+              <Post 
+                postId={item.postId} 
+                caption={item.caption} 
+                userId={item.userId} 
+                likes={likes[item.postId]}
+                comments={comments[item.postId]}
+              />
           </div>
         ))}
 

@@ -1,6 +1,6 @@
-import React, { useContext, useState } from 'react';
+import React, { useState } from 'react';
 import Modal from 'react-modal';
-import { UserContext } from '../userContext';
+import { Users } from '../hooks/userHooks';
 import { updateName as updateUserName } from '../functions/userFunctions';
 import '../css/updateProfile.css';
 
@@ -9,7 +9,7 @@ function FirstAndLastNameModal({ isOpen, onClose, initialFirstName = '', initial
     const [lastName, setLastName] = useState(initialLastName);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
-    const { userID } = useContext(UserContext);
+    const { userID } = Users();
 
     const updateName = async () => {
         setLoading(true);

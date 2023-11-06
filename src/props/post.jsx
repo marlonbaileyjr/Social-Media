@@ -1,32 +1,79 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState} from 'react';
 import Slider from 'react-slick';
 import '../css/post.css';
 import { useNavigate } from 'react-router-dom';
 import { getUserById } from '../functions/userFunctions';
-import { getPicturesFromPost} from '../functions/postFunctions';
-import {getComments} from '../functions/commentFunction'
-
-class Comment {
-  constructor(commentData) {
-    this.commentID = commentData.commentID;
-    this.text = commentData.text;
-    this.parentCommentID = commentData.parentCommentID;
-    this.replies = []; // Array to store nested comments
-  }
-
-  addReply(reply) {
-    this.replies.push(reply);
-  }
-}
+import {Users} from '../hooks/userHooks'
+import { usePosts } from '../hooks/postHooks';
+import {useComments} from '../hooks/commentHooks'
+import { useLikes } from '../hooks/likeHooks';
 
 
+const processComments = (comments) => {
+  const commentMap = new Map();
 
-function Post({ postId, caption, userId }) {
+  comments.forEach((commentData) => {
+    if (!commentData.replies) {
+      commentData.replies = [];
+    }
+    commentMap.set(commentData.commentId, commentData);
+  });
+
+  const topLevelComments = comments.filter(
+    (commentData) => !commentData.parentCommentId
+  );
+
+  comments.forEach((commentData) => {
+    if (commentData.parentCommentId) {
+      const parentId = Number(commentData.parentCommentId);
+      if (commentMap.has(parentId)) {
+        const parentComment = commentMap.get(parentId);
+        if (!parentComment.replies.includes(commentData)) {  // Check if comment isn't already in the replies
+          parentComment.replies.push(commentData);
+        }
+      } else {
+        console.warn("Failed to find parent for comment: ", commentData);
+      }
+    }
+  });
+
+  return topLevelComments;
+};
+
+
+function Post({ postId, caption, userId, likes, comments }) {
+
   const navigate = useNavigate();
+  const { userID } = Users();
+  const {addLike, deleteLike} = useLikes()
   const [showComments, setShowComments] = useState(false);
   const [user, setUser] = useState('');
-  const [pictures, setPictures] = useState([]);
-  const [comments, setComments] = useState([]);
+  const {usePostMediaDetails} = usePosts()
+  const { data: pictures } = usePostMediaDetails(postId);
+  const [liked, setLiked] = useState(false)
+
+
+  const handleLikeClick = async () => {
+    // If the post is already liked, unlike it.
+  if (liked) {
+    try {
+      //deleteLike(userID, postId);
+      setLiked(false);
+    } catch (error) {
+      console.error('Error unliking the post:', error);
+    }
+  }
+  // If the post is not liked, like it.
+  else {
+    try {
+      addLike({userId: userID, postId: postId});
+      setLiked(true);
+    } catch (error) {
+      console.error('Error liking the post:', error);
+    }
+  }
+};
+  
 
   useEffect(() => {
     const fetchUserAndSetState = async (userId) => {
@@ -42,25 +89,6 @@ function Post({ postId, caption, userId }) {
     fetchUserAndSetState(userId);
   }, [userId]);
 
-  useEffect(() => {
-    const fetchPicturesAndComments = async () => {
-      try {
-        const pics = await getPicturesFromPost(postId);
-        setPictures(pics);
-      } catch (error) {
-        console.error('An error occurred while fetching pictures:', error);
-      }
-
-      try {
-        const comms = await getComments(postId);
-        setComments(processComments(comms)); // Assuming processComments is synchronous
-      } catch (error) {
-        console.error('An error occurred while fetching comments:', error);
-      }
-    };
-
-    fetchPicturesAndComments();
-  }, [postId]);
 
  
 
@@ -95,17 +123,21 @@ function Post({ postId, caption, userId }) {
           <Slider {...settings}>
             {pictures.map((pic, index) => (
               <div key={index}>
-                <img src={pic.media} alt={`Slide ${index}`} />
+                <img src={`data:image/jpeg;base64,${pic}`} alt={`Slide ${index}`} />
               </div>
             ))}
           </Slider>
         ) : pictures && pictures.length === 1 ? (
-          <img src={pictures[0].media} alt="Post" />
+          <img src={`data:image/jpeg;base64,${pictures[0]}`} alt="Post" />
         ) : null}
 
         <p>{caption}</p>
         <div className="interaction-layer">
-          <i className="fas fa-thumbs-up like-icon"></i>
+        <i
+          className={`fas fa-thumbs-up like-icon ${liked ? 'liked' : ''}`}
+          onClick={handleLikeClick}
+        ></i>
+        <span>{likes}</span>
           <i
             className="fas fa-comment comment-icon"
             onClick={() => setShowComments(!showComments)}
@@ -114,73 +146,95 @@ function Post({ postId, caption, userId }) {
           </i>
         </div>
 
-        {showComments && <CommentsDropdown comments={comments} />}
+        {showComments && <CommentsDropdown comments={comments} postId={postId} />}
       </div>
     </div>
   );
-}
+        }
 
-function CommentsDropdown({ comments }) {
-  const topLevelComments = processComments(comments);
+
+function CommentsDropdown({ comments, postId}) {
+  const { userID } = Users();
+  const {addComment} = useComments()
+  const processedComments = processComments(comments);
+  const [text, setText] = useState('');
 
   return (
     <div className="comments-dropdown">
       <div className="comments-scroll-box">
-        {topLevelComments.map((comment) => (
-          <CommentComponent key={comment.commentID} comment={comment} />
+        {processedComments.map((comment) => (
+          <CommentComponent key={comment.commentId} comment={comment} postId={postId} />
         ))}
       </div>
-      <textarea placeholder="Write a comment..."></textarea>
+      <textarea 
+        placeholder="Write a comment..."
+        value={text}
+        onChange={(e) => setText(e.target.value)}
+      ></textarea>
+      <button onClick={async () => {
+        addComment({
+          postId,
+          userId: userID,
+          text,
+          parentCommentId: null
+      });
+      }}>Add Comment</button>
     </div>
   );
 }
 
-const processComments = (comments) => {
-  const commentMap = new Map();
 
-  comments.forEach((commentData) => {
-    const comment = new Comment(commentData);
-    commentMap.set(comment.commentID, comment); // Use the correct property name here
-  });
-
-  const topLevelComments = comments.filter(
-    (commentData) => !commentMap.has(commentData.parentCommentID) // And here
-  );
-
-  topLevelComments.forEach((topLevelComment) => {
-    addRepliesToComment(topLevelComment, commentMap);
-  });
-
-  return topLevelComments;
-};
-
-const addRepliesToComment = (comment, commentMap) => {
-  comment.replies = commentMap.get(comment.commentID)?.replies || []; // Correct property name here as well
-  comment.replies.forEach((reply) => addRepliesToComment(reply, commentMap));
-};
-
-
-function CommentComponent({ comment }) {
+function CommentComponent({ comment, postId }) {
+  const { userID } = Users();
+  const {addComment} = useComments()
   const [showReplies, setShowReplies] = useState(false);
+  const [text, setText] = useState('');
+  const [showCommentBox, setShowCommentBox] = useState(false);
 
   return (
     <div className="comment">
-      <p className="comment-text">{comment.text}</p>
+      <div className="comment-content">
+        <p className="reply-button" onClick={(e) => {
+          setShowCommentBox(!showCommentBox);
+        }}>Reply</p>
 
-      {comment.replies.length > 0 && (
-        <div className="comment-replies">
+        <p className="comment-text">{comment.text}</p>
+
+        {comment.replies && comment.replies.length > 0 && (
           <i
-            className={`fas fa-chevron-${showReplies ? "up" : "down"} toggle-icon`}
-            onClick={() => setShowReplies(!showReplies)}
+            className={`fas fa-chevron-${showReplies ? "up" : "down"}`}
+            onClick={(e) => {
+              setShowReplies(!showReplies);
+            }}
           ></i>
-          {showReplies &&
-            comment.replies.map((reply) => (
-              <CommentComponent key={reply.commentID} comment={reply} />
-            ))}
+        )}
+      </div>
+      
+      {showReplies && comment.replies.map((reply) => (
+        <CommentComponent key={reply.commentId} comment={reply} postId={postId} />
+      ))}
+        
+      {showCommentBox && (
+        <div>
+          <textarea 
+              placeholder="Reply to this comment..."
+              value={text}
+              onChange={(e) => setText(e.target.value)}
+          ></textarea>
+          <button onClick={() => {
+    addComment({
+      postId,
+      userId: userID,
+      text,
+      parentCommentId: comment.commentId
+  });
+}}>Add Reply</button>
         </div>
       )}
     </div>
   );
 }
+
+
 
 export default Post;

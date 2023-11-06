@@ -1,67 +1,56 @@
-export const comments = [
-    {
-      commentId: 1,
-      postId: 1,
-      userId: 2,
-      text: "Great post!",
-      timestamp: "2023-01-02T12:00:00Z"
-    },
-    {
-      commentId: 2,
-      postId: 1,
-      userId: 3,
-      text: "Thanks for sharing.",
-      timestamp: "2023-01-02T13:00:00Z"
-    },
-    {
-      commentId: 3,
-      postId: 2,
-      userId: 4,
-      text: "Looks wonderful!",
-      timestamp: "2023-01-03T15:00:00Z"
-    },
-    {
-      commentId: 4,
-      postId: 2,
-      userId: 1,
-      text: "Where was this taken?",
-      timestamp: "2023-01-03T16:00:00Z"
-    }
-  ];
-  
-  function getComments(postId) {
-    return comments.filter(comment => comment.postId === postId);
+import axios from "axios";
+import { formatDate } from "./formatDate";
+
+async function getComments(postId) {
+  const url = `http://localhost:8080/api/v1/comment/post/${postId}`;
+  try {
+    const response = await axios.get(url);
+
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching comments:', error);
+    return null;
   }
-  
-  function addComment(postId, userId, text) {
-    const newComment = {
-      commentId: comments.length + 1,
-      postId,
+}
+
+async function addComment(postId, userId, text, parentCommentId) {
+  console.log(postId, userId, text, parentCommentId)
+  try {
+    const commentBody = {
       userId,
       text,
-      timestamp: new Date().toISOString()
+      parentCommentId,
+      uploadTime: formatDate(new Date())
     };
-    comments.push(newComment);
-    return newComment;
+    const url = `http://localhost:8080/api/v1/comment/add/${postId}`;
+    const response = await axios.post(url, commentBody);
+    console.log('Comment posted successfully:', response.data);
+  } catch (error) {
+    console.error('Error posting comment:', error.response ? error.response.data : error.message);
   }
-  
-  function deleteComment(commentId) {
-    const index = comments.findIndex(comment => comment.commentId === commentId);
-    if (index !== -1) {
-      comments.splice(index, 1);
-      return true; // Comment deleted successfully
-    }
-    return false; // Comment not found
+}
+
+async function deleteComment(commentId) {
+  const url = `http://localhost:8080/api/v1/comment/delete/${commentId}`;
+  try {
+    await axios.delete(url);
+    console.log(`Comment with commentId ${commentId} deleted successfully.`);
+  } catch (error) {
+    console.error(`An error occurred while deleting the comment: ${error.message}`);
   }
-  
-  function editComment(commentId, newText) {
-    const comment = comments.find(comment => comment.commentId === commentId);
-    if (comment) {
-      comment.text = newText;
-      return true; // Comment edited successfully
-    }
-    return false; // Comment not found
+}
+
+async function editComment(commentId, newText) {
+  const url = `http://localhost:8080/api/v1/comment/edit/${commentId}`;
+  const body = {
+    text: newText
+  };
+  try {
+    const response = await axios.put(url, body);
+    console.log('Comment updated successfully:', response.data);
+  } catch (error) {
+    console.error('There was a problem updating the comment:', error);
   }
-  
-  export { getComments, addComment, deleteComment, editComment };
-  
+}
+
+export { getComments, addComment, deleteComment, editComment };

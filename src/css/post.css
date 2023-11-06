@@ -1,11 +1,11 @@
 .post-container {
     position: relative;
-    max-width: 300px; /* Changed from width to max-width for better responsiveness */
-    width: 100%; /* This ensures it takes full width on smaller screens */
+    max-width: 300px;
+    width: 100%;
     border: 1px solid #ddd;
     padding: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    margin: 0 auto; /* Centers the container if the viewport is bigger than 300px */
+    margin: 0 auto;
     overflow: hidden;
 }
 
@@ -19,11 +19,11 @@
 
 .post-container .profile-bar .user-profile-picture {
     width: 40px;
-    height: 40px; 
-    border-radius: 50%; 
+    height: 40px;
+    border-radius: 50%;
     margin: 1px;
 }
-  
+
 .post-container .profile-bar .user-username {
     font-weight: bold;
     font-size: 16px;
@@ -44,8 +44,13 @@
 }
 
 .like-icon,
-.comment-icon {
+.comment-icon,
+.reply-button {  
     cursor: pointer;
+}
+
+.like-icon.liked {
+    color: blue; 
 }
 
 .comment-text,
@@ -55,7 +60,7 @@
 }
 
 .first-comment-prompt {
-    color: grey; 
+    color: grey;
 }
 
 .comments-dropdown {
@@ -72,31 +77,67 @@
 
 .comment {
     text-align: left;
-    margin: 0;
+    margin: 3px 0;
     padding: 3px 0;
 }
+
+.comment-content {
+    display: flex;
+    align-items: center;  /* Align items vertically in the center */
+  }
   
-.comment-replies {
+  .comment-text {
+    flex-grow: 1;  /* Allow the comment text to take up available space */
+    margin: 0 10px;  /* Add some spacing between the text and the buttons/icons */
+  }
+  
+  .reply-button {
+    cursor: pointer;  /* Make it look clickable */
+  }
+  
+  .fas {
+    cursor: pointer;  /* Make icons look clickable */
+  }
+  
+  .comment .comment {
+    margin-top: 2px; /* Reduce margin-top for nested comments */
+    margin-bottom: 2px; /* Reduce margin-bottom for nested comments */
+  }
+
+  .comment-replies {
     margin-left: 20px;
 }
-  
+
 .toggle-icon {
     cursor: pointer;
     margin-left: 5px;
 }
 
 .toggle-icon.fa-chevron-up::before {
-    content: "\f077"; 
+    content: "\f077";
 }
 
 .toggle-icon.fa-chevron-down::before {
     content: "\f078";
 }
-  
+
 textarea {
     width: 100%;
     padding: 5px;
     resize: none;
+}
+
+.reply-button {  /* Added reply-button styling */
+    color: blue;
+    border: none;
+    border-radius: 5px;
+    padding: 5px 10px;
+    font-weight: bold;
+    transition: color 0.3s ease;
+}
+
+.reply-button:hover {
+    color: darkblue;
 }
 
 @media only screen and (max-width: 600px) {
@@ -105,11 +146,11 @@ textarea {
     }
 
     .post-container .profile-bar .user-username {
-        font-size: 14px; /* Reduced the font-size for smaller screens */
+        font-size: 14px;
     }
 
     .post-container .profile-bar .user-profile-picture {
-        width: 30px; /* Reduced the image size for smaller screens */
+        width: 30px;
         height: 30px;
     }
 }

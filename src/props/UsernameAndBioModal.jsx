@@ -1,12 +1,12 @@
-import React, { useContext, useState } from 'react';
+import React, { useState } from 'react';
 import Modal from 'react-modal';
-import { UserContext } from '../userContext';
+import { Users } from '../hooks/userHooks';
 
 import '../css/updateProfile.css';
 import { updateUsernameAndBio } from '../functions/userFunctions';
 
 function BioAndUsernameModal({ isOpen, onClose, initialBio = '', initialUsername = '' }) {
-  const { userID } = useContext(UserContext);
+  const { userID } = Users();
   const [bio, setBio] = useState(initialBio);
   const [username, setUsername] = useState(initialUsername);
   const [loading, setLoading] = useState(false);

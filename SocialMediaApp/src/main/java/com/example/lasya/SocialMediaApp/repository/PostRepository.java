@@ -33,7 +33,7 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
 
     @Modifying
     @Query(value = "INSERT INTO Pictures(media, type, order_int, upload_time, post_id) VALUES (?, ?, ?, ?, ?)", nativeQuery = true)
-    Post addPicture(byte[] media, String type, int order, Date uploadTime, int post);
+    int addPicture(byte[] media, String type, int order, Date uploadTime, int post);
 
     @Modifying
     @Query("DELETE FROM Post p WHERE p.postId = :postId")

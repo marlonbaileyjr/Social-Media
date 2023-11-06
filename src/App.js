@@ -6,11 +6,18 @@ import UploadPage from './components/UploadPage';
 import ForgotPassword from './components/forgotPassword';
 import SignUp from './components/signup';
 import ProfilePage from './components/profile';
-import { useContext } from 'react';
-import { UserContext } from './userContext';
+import ProfilePictureAndBio from './components/profilePictureAndBio';
+import {Users} from './hooks/userHooks'
+import {usePosts} from './hooks/postHooks'
+import LoadingScreen from './components/loadingScreen'
 
 function App() {
-  const { loggedin } = useContext(UserContext);
+  const {isPostsLoading} = usePosts()
+  const { loggedin } = Users();
+
+  if (isPostsLoading) {
+    return <LoadingScreen />;
+  }
 
   return (
     <Router>
@@ -22,6 +29,7 @@ function App() {
             <Route path="/" element={<Main />} />
             <Route path="/upload" element={<UploadPage />} />
             <Route path="/profile/:USER_ID" element={<ProfilePage />} />
+            <Route path="/addPictureBio/:userId" element={<ProfilePictureAndBio />} />
           </>
         ) : (
           <>

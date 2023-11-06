@@ -1,14 +1,24 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { Users } from '../hooks/userHooks'; 
+import { useNavigate } from 'react-router-dom';
+
 import { SignUpUser } from '../functions/userFunctions';
 
 function SignUp() {
+    const { setLoggedin, setUserID } = Users();
+    const navigate = useNavigate();
+
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
     const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [dob, setDob] = useState(''); // Date of Birth
+
+    const goToProfile = (userId) => {
+        navigate(`/profile/${userId}`);
+      };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -28,6 +38,12 @@ function SignUp() {
 
             if (response.success) {
                 alert("Signed Up Successfully")
+                const id= response.userId
+                setUserID(id)
+                setLoggedin(true)
+                goToProfile(id)
+                
+                
             } else {
                 // Handle failure (e.g., show error message to the user)
                 alert('Sign-up failed:', response.message);

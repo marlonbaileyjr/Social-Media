@@ -1,4 +1,6 @@
 import { createContext, useState } from 'react';
+import {getUserById, searchUser, SignUpUser, SignInUser, updatePassword, updateUsernameAndBio,updateBio, updateName, updateProfilePicture,} from '../functions/userFunctions'
+
 
 export const UserContext = createContext({
   userID: '',

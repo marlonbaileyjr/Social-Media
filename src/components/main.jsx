@@ -1,38 +1,24 @@
-import React, { useState, useContext, useEffect } from 'react';
-import { UserContext } from '../userContext';
+import React, { useState, useEffect } from 'react';
 import '../css/styles.css';
 import ScrollScreen from '../props/ScrollScreen';
-import { getPostsFromFriends, getAllPosts } from '../functions/postFunctions';
+import {usePosts} from '../hooks/postHooks'
+
 
 function Main() {
   
-  const { userID } = useContext(UserContext);
+  const {posts, friendPosts} = usePosts()
   const [currentItems, setCurrentItems] = useState([]); // Initialize with an empty array
   const [selectedOption, setSelectedOption] = useState('Following');
-console.log("currrent", currentItems)
-useEffect(() => {
-  const fetchData = async () => {
-    if (selectedOption === 'Following') {
-      try {
-        const postsFromFriends = await getPostsFromFriends(userID);
-        setCurrentItems(postsFromFriends);
-      } catch (error) {
-        console.error('Error fetching posts from friends:', error);
-        setCurrentItems([]); // or set to a default value or state
-      }
-    } else if (selectedOption === 'Discover') {
-      try {
-        const allPosts = await getAllPosts();
-        setCurrentItems(allPosts);
-      } catch (error) {
-        console.error('Error fetching all posts:', error);
-        setCurrentItems([]); // or set to a default value or state
-      }
-    }
-  };
 
-  fetchData();
-}, [userID, selectedOption]); // Dependencies array
+
+  useEffect(() => {
+        if (selectedOption === 'Following') {
+        setCurrentItems(friendPosts);
+        }else{
+          setCurrentItems(posts)
+        }
+
+  }, [friendPosts, posts, selectedOption]); 
 
 
   const handleClick = (option) => {

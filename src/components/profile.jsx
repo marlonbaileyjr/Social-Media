@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import profileHolder from '../img/download.jpeg'
 import '../css/profile.css';
 import { useParams } from 'react-router-dom';
@@ -6,14 +6,14 @@ import FirstAndLastNameModal from '../props/FirstandLastNameModal';
 import BioAndUsernameModal from '../props/UsernameAndBioModal';
 import ProfilePictureModal from '../props/updateProfilePictureModal';
 import noImg from '../img/NOIMG.jpeg'
-import { UserContext } from '../userContext';
-import {getPostById, getPicturesFromPost, getPostByPostId} from '../functions/postFunctions'; 
+import { Users } from '../hooks/userHooks';
+import {retrievePostByUserId, getPostMedia, getPostByPostId} from '../functions/postFunctions'; 
 import {getUserById} from '../functions/userFunctions';
 import { getFollowed, getFollowers, addFriendship, deleteFriendship } from '../functions/friendshipFunctions'
 import Post from '../props/post';
 
 function ProfilePage(props) {
-  const { userID: contextUserId } = useContext(UserContext);
+  const { userID: contextUserId } = Users();
   const { USER_ID: paramUserId } = useParams();
 
   const [user, setUser] = useState(null);
@@ -83,16 +83,32 @@ function closeModalAndRefresh() {
   
     const fetchUserPosts = async () => {
       try {
-        const userPostsData = await getPostById(Number(paramUserId));
-        if (userPostsData) {
-          setUserPosts(getPicturesFromPost(userPostsData.post.postId));
-        }
-      } catch (error) {
-        console.error('Error fetching user posts:', error);
-      }
-    };
+          const userPostsData = await retrievePostByUserId(Number(paramUserId));
+          console.log('profile page posts', userPostsData);
   
-    fetchUserPosts();
+          if (userPostsData && userPostsData.length > 0) {
+              const mediaPromises = userPostsData.map(async post => {
+                  const res = await getPostMedia(post.postId);
+                  console.log('res',res)
+                  const media= res.media
+                  console.log(`Media for post ${post.postId}:`, media);
+                  return {
+                      ...post,
+                      media: media
+                  };
+              });
+  
+              const postsWithMedia = await Promise.all(mediaPromises);
+              setUserPosts(postsWithMedia);
+          }
+      } catch (error) {
+          console.error('Error fetching user posts:', error);
+          setUserPosts([]);
+      }
+  };
+  
+  fetchUserPosts();
+  
   
     // Fetch followers count
     const fetchFollowers = async () => {
@@ -135,12 +151,10 @@ function closeModalAndRefresh() {
     try {
       await addFriendship(contextUserId, Number(paramUserId));
       setIsFollowing(true);
-      // Optionally: Update followers count after following
       const updatedFollowers = await getFollowers(Number(paramUserId));
       setFollowersCount(updatedFollowers.length);
     } catch (error) {
       console.error('Error while following user:', error);
-      // Handle the error appropriately, maybe show a message to the user.
     }
   };
   
@@ -148,7 +162,7 @@ function closeModalAndRefresh() {
     try {
       await deleteFriendship(contextUserId, Number(paramUserId));
       setIsFollowing(false);
-      // Optionally: Update followers count after unfollowing
+      // Fetch updated followers count after unfollowing
       const updatedFollowers = await getFollowers(Number(paramUserId));
       setFollowersCount(updatedFollowers.length);
     } catch (error) {
@@ -175,10 +189,10 @@ function closeModalAndRefresh() {
   return (
     <div className="profile-page">
       <div className="profile-header">
-      <img src={user.profilePicture ? `data:image/jpeg;base64,${user.profilePicture}` : profileHolder} alt={`${user.userName}'s profile`} className="profile-pic" />
+      <img src={user.profilePicture ? `data:image/jpeg;base64,${user.profilePicture}` : profileHolder} alt={`${user.userName}'s profile`} className="profile-pic" /> {canEdit && <i className="fas fa-edit" onClick={handlePictureIconClick}></i>}
 
         <h1>
-          {user.userName} {canEdit && <i className="fas fa-edit" onClick={handlePictureIconClick}></i>}
+          {user.userName} 
         </h1>
         <p>
             {user.bio} {canEdit && <i className="fas fa-edit" onClick={handleBioIconClick}></i>}
@@ -234,12 +248,12 @@ function closeModalAndRefresh() {
         {userPosts.map((post) => (
           <img 
             key={post.pictureId} 
-            src={post.media || noImg} 
+            src={post.media ? `data:image/jpeg;base64,${post.media}` : noImg} 
             alt="User post" 
             className="post-image" 
             onClick={() => handlePostClick(post)}
             />
-        ))}
+        ))} 
       </div>
 
       {isModalOpen && (
@@ -260,13 +274,20 @@ function PostModal({ post, onClose }) {
 
   useEffect(() => {
     const fetchPostDetails = async () => {
-      const postData = await getPostByPostId(post.postId);
-      setPostDetails(postData);
+      try {
+        const postData = await getPostByPostId(post.postId);
+        setPostDetails(postData);
+      } catch (error) {
+        console.error('Error fetching post details:', error);
+        // Handle the error state appropriately, maybe set post details to null or show an error message
+        setPostDetails(null); // or any other error handling logic
+      }
     };
     
-    fetchPostDetails();
+    if (post.postId) {
+      fetchPostDetails();
+    }
   }, [post.postId]);
-
   console.log('postsSS',postDetails)
 
   if (!postDetails) {

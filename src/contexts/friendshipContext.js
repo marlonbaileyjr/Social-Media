@@ -1,0 +1,86 @@
+import React, { createContext } from 'react';
+import { useQueries, useMutation, useQueryClient } from 'react-query';
+import { getFollowers, getFollowed, addFriendship, deleteFriendship, checkFriendship } from '../functions/friendshipFunctions';
+import { useUser } from '../hooks/userHooks';
+
+export const FriendContext = createContext();
+
+export function FriendProvider({ children }) {
+    const { userID } = useUser();
+    const queryClient = useQueryClient();
+
+    // Use `useQueries` to fetch all followers and following for userID
+    const results = useQueries([
+        {
+            queryKey: ['followers', userID],
+            queryFn: () => getFollowers(userID),
+            enabled: !!userID, // only run if userID is truthy
+        },
+        {
+            queryKey: ['followed', userID],
+            queryFn: () => getFollowed(userID),
+            enabled: !!userID, // only run if userID is truthy
+        }
+    ]);
+
+    // Destructure the results
+    const [followersResult, followedResult] = results;
+
+    // Map the followersResult data to an array of followers
+    const followersArray = followersResult.data
+        ? followersResult.data.map(follower => follower.follower) // Assuming 'follower' is the property you want
+        : [];
+
+    const followedArray = followersResult.data
+    ? followersResult.data.map(follower => follower.followed) // Assuming 'follower' is the property you want
+    : [];
+
+    //MUTATIONS
+
+    const addFriendshipMutation = useMutation(addFriendship, {
+        onSuccess: () => {
+            queryClient.invalidateQueries(['followers', userID]);
+            queryClient.invalidateQueries(['followed', userID]);
+        },
+        onError: (error) => {
+            // Handle add friendship error
+            console.error('Error adding friendship:', error);
+        },
+    });
+
+    const deleteFriendshipMutation = useMutation(deleteFriendship, {
+        onSuccess: () => {
+            queryClient.invalidateQueries(['followers', userID]);
+            queryClient.invalidateQueries(['followed', userID]);
+        },
+        onError: (error) => {
+            // Handle delete friendship error
+            console.error('Error deleting friendship:', error);
+        },
+    });
+
+    const checkFriendshipMutation = useMutation(checkFriendship, {
+        onError: (error) => {
+            // Handle check friendship error
+            console.error('Error checking friendship:', error);
+        },
+    });
+
+
+    // Construct the value to be provided to the context consumers
+    const value = {
+        followers: followersArray,
+        following: followedArray || [],
+        isFriendsLoading: followersResult.isLoading || followedResult.isLoading,
+        friendsError: (followersResult.error || followedResult.error) ? [followersResult.error, followedResult.error] : null,
+        addFriendship: addFriendshipMutation.mutate,
+        deleteFriendship: deleteFriendshipMutation.mutate,
+        checkFriendship: checkFriendshipMutation.mutate,
+    };
+
+    return (
+        <FriendContext.Provider value={value}>
+            {children}
+        </FriendContext.Provider>
+    );
+}

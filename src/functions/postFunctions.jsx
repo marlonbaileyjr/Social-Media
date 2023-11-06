@@ -1,168 +1,174 @@
-import img1 from '../img/download.png'
-import img2 from '../img/test.png'
-import img3 from '../img/test1.jpeg'
-//import img4 from '../img/w3kr4m2fi3111.png'
-import post1 from '../img/pos1.jpeg'
-import post2 from '../img/post2.jpeg'
-// import post3 from '../img/post3.jpeg'
-// import post4 from '../img/post4.jpeg'
-// import post5 from '../img/post5.jpeg'
+import axios from 'axios';
 
-import { getFollowed} from './friendshipFunctions'
+async function createPost(caption, userId) {
+  console.log('create', caption, userId)
+  const url = 'http://localhost:8080/api/v1/posts';
+  // Create a new Date object and format it as an ISO string
+  const uploadTime = new Date().toISOString();
 
-export const posts = [
-    {
-        "post": {
-          "postId": 1,
-          "caption": "John's latest adventure",
-          "userId": 1,
-          "uploadTime": "2023-09-29T12:00:00Z"
-        }
-      },
-      {
-        "post": {
-          "postId": 2,
-          "caption": "Jane's favorite book recommendations",
-          "userId": 2,
-          "uploadTime": "2023-09-29T12:30:00Z"
-        }
-    },
-    {
-        "post": {
-          "postId": 3,
-          "caption": "Alice's day out in the city",
-          "userId": 3,
-          "uploadTime": "2023-09-29T13:00:00Z"
-        }
-      },
-      {
-        "post": {
-          "postId": 4,
-          "caption": "Bob's new music playlist",
-          "userId": 4,
-          "uploadTime": "2023-09-29T13:30:00Z"
-        },
-      },
-      {
-        "post": {
-          "postId": 5,
-          "caption": "Charlie's trip to the mountains",
-          "userId": 5,
-          "uploadTime": "2023-09-29T14:00:00Z"
-        },
-      }
-  ]
+  const body = {
+    caption: caption,
+    userId: userId,
+    uploadTime: uploadTime // Use the generated timestamp
+  };
 
-  export const Pictures = [
-    {
-      "pictureId": 1,
-      "postId": 1,
-      "type": "image",
-      "order": 1,
-      "media": img1,
-      "uploadTime": "2023-09-29T00:00:00Z" 
-    },
-    {
-      "pictureId": 2,
-      "postId": 2,
-      "type": "image",
-      "order": 1,
-      "media": img2,
-      "uploadTime": "2023-09-29T00:00:00Z"
-    },
-    {
-      "pictureId": 3,
-      "postId": 2,
-      "type": "video",
-      "order": 2,
-      "media": img3,
-      "uploadTime": "2023-09-29T00:00:00Z"
-    },
-    {
-      "pictureId": 4,
-      "postId": 3,
-      "type": "image",
-      "order": 1,
-      "media": post1,
-      "uploadTime": "2023-09-29T00:00:00Z"
-    },
-    {
-      "pictureId": 5,
-      "postId": 4,
-      "type": "image",
-      "order": 1,
-      "media": post2,
-      "uploadTime": "2023-09-29T00:00:00Z"
+  try {
+    const response = await axios.post(url, body);
+
+    return response
+  } catch (error) {
+    console.error('Error creating the post', error.response);
+    // handle the error as needed
+  }
+}
+
+async function fetchPosts() {
+  const url = 'http://localhost:8080/api/v1/posts';
+
+  try {
+    const response = await axios.get(url);
+    console.log('Posts fetched successfully', response.data);
+    // handle the response data
+    return response.data; // returning the posts data
+  } catch (error) {
+    console.error('Error fetching the posts', error.response);
+    // handle the error as needed
+    throw error; // throwing the error to be handled by the caller
+  }
+}
+
+async function deletePost(postId) {
+  const url = `http://localhost:8080/api/v1/posts/delete/${postId}`;
+
+  try {
+    const response = await axios.delete(url);
+    console.log('Post deleted successfully', response.data);
+    // handle the response as needed
+  } catch (error) {
+    console.error('Error deleting the post', error.response);
+    // handle the error as needed
+    throw error; // throwing the error for further handling if needed
+  }
+}
+
+async function retrievePostByUserId(userId){
+const url = ``
+
+try{
+
+} catch (error) {
+
+}
+}
+
+async function getPostByPostId(postId) {
+  const url = `http://localhost:8080/api/v1/posts/getPost/${postId}`;
+
+  try {
+    const response = await axios.get(url);
+    console.log('Post retrieved successfully:', response.data);
+    // Process the response data as needed
+    return response.data; // Return the post data
+  } catch (error) {
+    console.error('Error retrieving the post:', error.response);
+    // Handle the error as needed
+    throw error; // Throw the error to be handled by the caller
+  }
+}
+
+async function updatePost(postId, caption, userId) {
+  const url = `http://localhost:8080/api/v1/posts/update/${postId}`;
+  const body = {
+    caption: caption,
+    userId: userId,
+    uploadTime: new Date().toISOString()
+  };
+
+  try {
+    const response = await axios.put(url, body);
+    console.log('Post updated successfully', response.data);
+    return response.data;
+  } catch (error) {
+    console.error('Error updating the post', error.response);
+    throw error;
+  }
+}
+
+async function retrieveFriendPosts(userId) {
+  const url = `http://localhost:8080/api/v1/posts/retrievePost/${userId}`;
+
+  try {
+    const response = await axios.get(url);
+    console.log('Post retrieved successfully', response.data);
+    return response.data;
+  } catch (error) {
+    console.error('Error retrieving the post', error.response);
+    throw error;
+  }
+}
+
+async function uploadPostPicture(postId, order, mediaFile) {
+  console.log('uploadpics', postId, order, mediaFile)
+  const url = `http://localhost:8080/api/v1/posts/pictures/${postId}`;
+  
+  const formData = new FormData();
+  formData.append('type', 'image');
+  formData.append('order', order);
+  formData.append('media', mediaFile);
+  formData.append('uploadTime', new Date().toISOString());
+
+  const config = {
+    headers: {
+      'Content-Type': 'multipart/form-data'
     }
-  ]
+  };
 
-  function getPostById(userId) {
-    return posts.find(post => post.post.userId === userId);
+  try {
+    const response = await axios.post(url, formData, config);
+    console.log('Picture uploaded successfully', response.data);
+    return response.data;
+  } catch (error) {
+    console.error('Error uploading the picture', error.response);
+    throw error;
   }
+}
   
-  function getPostByPostId(postId) {
-    return posts.find(post => post.post.postId === postId);
+async function getLatestPicture(postId) {
+  const url = `http://localhost:8080/api/v1/posts/getLatestPicture/${postId}`;
+
+  try {
+    const response = await axios.get(url);
+    console.log('Received latest picture data:', response.data);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching the latest picture', error.response);
+    throw error;
   }
-  
-  function getAllPosts() {
-    return posts;
+}
+
+async function getPostMedia(postID) {
+  const url = `http://localhost:8080/api/v1/posts/media/${postID}`;
+
+  try {
+    const response = await axios.get(url);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching the post media', error.response);
+    throw error;
   }
-  
-  async function getPostsFromFriends(userId) {
-    try {
-      // Await the async call to getFollowed to resolve
-      const userFollowed = await getFollowed(userId);
-      console.log(userFollowed)
-  
-      // Assuming posts is an array of posts available in the scope and
-      // each post has a property like post.userId to identify the posting user
-      const friendPosts = posts.filter(post => 
-        userFollowed.some(followedUser => followedUser.followedId === post.userId)
-      );
-  
-      return friendPosts;
-    } catch (error) {
-      // Handle any errors that occur during the fetch
-      console.error('Failed to get posts from friends:', error);
-      return []; // return an empty array or handle the error as appropriate
-    }
-  }
-  
-  function getPicturesFromPost(postId) {
-    // Implement logic to get pictures associated with a post
-    return Pictures.filter(picture => picture.postId === postId);
-  }
-  
-  function addPost(caption, userId) {
-    // Implement logic to add a new post
-    const newPost = {
-      post: {
-        postId: posts.length + 1,
-        caption,
-        userId,
-        uploadTime: new Date().toISOString()
-      }
-    };
-    posts.push(newPost);
-    return newPost;
-  }
-  
-  function deletePost(postId) {
-    // Implement logic to delete a post
-    const index = posts.findIndex(post => post.post.postId === postId);
-    if (index !== -1) {
-      posts.splice(index, 1);
-      return true; // Post deleted successfully
-    }
-    return false; // Post not found
-  }
-  
+}
+
   export {
-    getPostById,
-    getPostByPostId,
-    getAllPosts,
-    getPostsFromFriends,
-    getPicturesFromPost,
-    addPost,
+    createPost,
+    fetchPosts,
     deletePost,
+    getPostByPostId,
+    updatePost,
+    retrievePostByUserId,
+    uploadPostPicture,
+    getLatestPicture,
+    getPostMedia,
+    retrieveFriendPosts
+
+
   };

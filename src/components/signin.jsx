@@ -1,13 +1,13 @@
-import React, { useState, useContext } from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { UserContext } from '../userContext'; // Import your UserContext
+import { Users } from '../hooks/userHooks'; // Import your UserContext
 import { SignInUser } from '../functions/userFunctions';
 import '../css/signin.css';
 
 function SignIn() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
-    const { setLoggedin, setUserID } = useContext(UserContext);
+    const { setLoggedin, setUserID } = Users();
 
     const handleSignIn = async () => {
         try {
@@ -18,8 +18,6 @@ function SignIn() {
           // If the call was successful, update the logged-in state and user ID
           setLoggedin(true);
           setUserID(data); // Adjust based on the actual structure of your response data
-      
-          alert('Signin successful');
         } catch (error) {
           if (error.response && error.response.status === 401) {
             alert('Incorrect password.');
