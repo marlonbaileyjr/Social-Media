@@ -14,25 +14,28 @@ export function FriendProvider({ children }) {
         {
             queryKey: ['followers', userID],
             queryFn: () => getFollowers(userID),
-            enabled: !!userID, // only run if userID is truthy
+            staleTime: Infinity, 
+            enabled: !!userID, 
         },
         {
             queryKey: ['followed', userID],
             queryFn: () => getFollowed(userID),
-            enabled: !!userID, // only run if userID is truthy
+            staleTime: Infinity, 
+            enabled: !!userID, 
         }
     ]);
+    
 
     // Destructure the results
     const [followersResult, followedResult] = results;
 
     // Map the followersResult data to an array of followers
     const followersArray = followersResult.data
-        ? followersResult.data.map(follower => follower.follower) 
+        ? followersResult.data.map(follower => follower.followerId) 
         : [];
 
     const followedArray = followersResult.data
-    ? followersResult.data.map(follower => follower.followed)
+    ? followedResult.data.map(follower => follower.followedId)
     : [];
 
     //MUTATIONS

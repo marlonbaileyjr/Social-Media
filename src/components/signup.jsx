@@ -16,28 +16,22 @@ function SignUp() {
     const [password, setPassword] = useState('');
     const [dob, setDob] = useState(''); // Date of Birth
 
-    const goToProfile = (userId) => {
-        navigate(`/profile/${userId}`);
+    const goToPictureAndBio = (userId) => {
+        navigate(`/addPictureBio/${userId}`);
       };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            // Call the SignUpUser function and wait for the response
-
-            // Assuming the SignUpUser function returns a Promise
             const response = await SignUpUser(firstName,lastName,username,email,password,dob);
-
-            if (response.success) {
+            console.log(response)
+            if (response.status === 200) {
                 alert("Signed Up Successfully")
-                const id= response.userId
+                const id= response.data.userId
                 setUserID(id)
                 setLoggedin(true)
-                goToProfile(id)
-                
-                
+                goToPictureAndBio(id)
             } else {
-                // Handle failure (e.g., show error message to the user)
                 alert('Sign-up failed:', response.message);
             }
         } catch (error) {

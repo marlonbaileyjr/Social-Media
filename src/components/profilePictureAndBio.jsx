@@ -1,12 +1,19 @@
 import React, { useState } from 'react';
 import { updateProfilePicture, updateBio } from '../functions/userFunctions';
 import { useParams } from 'react-router-dom';
+import { Users } from '../hooks/userHooks';
+
+
 
 const ProfilePictureAndBio = () => {
     const { userId } = useParams()
+    const {setUserID,setLoggedin} = Users()
+    setUserID(userId)
   const [profilePicture, setProfilePicture] = useState(null);
   const [bio, setBio] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+
 
   const handlePictureChange = (event) => {
     setProfilePicture(event.target.files[0]);
@@ -61,7 +68,7 @@ const ProfilePictureAndBio = () => {
           {isSubmitting ? 'Updating...' : 'Update Profile'}
         </button>
       </form>
-      <button onClick={() => window.location.reload()} disabled={isSubmitting}>
+      <button onClick={() => setLoggedin(true)} disabled={isSubmitting}>
         Skip
       </button>
     </div>

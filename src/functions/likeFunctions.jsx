@@ -7,9 +7,8 @@ async function getLikes(postId) {
     return response.data; // Assuming the response data is the list of likes
   } catch (error) {
     if (error.response && error.response.status === 404) {
-      // If the error is a 404, log it and return an empty array
       console.log('No likes found, returning empty array.');
-      return [];
+      return [{}];
     } else {
       // For any other errors, log the full error
       console.error('Error fetching likes:', error);

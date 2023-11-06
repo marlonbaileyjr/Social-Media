@@ -2,7 +2,7 @@ import axios from "axios";
 
     async function getFollowed(userId) {
       try {
-        const url = `http://localhost:8080/api/friendship/${userId}`;
+        const url = `http://localhost:8080/api/v1/friendship/followers/${userId}`;
         const response = await axios.get(url);
         return response.data;
       } catch (error) {
@@ -16,7 +16,7 @@ import axios from "axios";
         const response = await axios.get(`http://localhost:8080/api/friendship/${userId}`);
         return response.data;
       } catch (error) {
-        alert('Error fetching followed users:', error);
+        alert('Error fetching followers users:', error);
         throw error;
       }
     }
@@ -25,7 +25,7 @@ import axios from "axios";
     async function deleteFriendship(followerId, followedId) {
       try {
         const response = await axios.delete(`http://localhost:8080/api/v1/friendship/delete/${followerId}/${followedId}`);
-        alert('Delete response:', response.data);
+        console.log('Delete response:', response.data);
       } catch (error) {
         alert('Error deleting friendship:', error);
       }
@@ -59,10 +59,14 @@ import axios from "axios";
 
     async function checkFriendship(followerId, followedId){
     try {
-      const response = await axios.delete(`http://localhost:8080/api/v1/friendship/delete/${followerId}/${followedId}`);
-      alert('Delete response:', response.data);
+      const response = await axios.get(`http://localhost:8080/api/v1/friendship/exists/${followerId}/${followedId}`);
+      if (response.data === 'Friendship exists'){
+        return true
+      }else{
+        return false
+      }
     } catch (error) {
-      alert('Error deleting friendship:', error);
+      alert('Error checking friendship:', error);
     }
   }
     

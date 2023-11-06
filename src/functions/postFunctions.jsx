@@ -52,12 +52,15 @@ async function deletePost(postId) {
 }
 
 async function retrievePostByUserId(userId){
-const url = ``
+const url = `http://localhost:8080/api/v1/posts/retrievePost/${userId}`
 
-try{
-
+try {
+  const response = await axios.get(url);
+  console.log('Post retrieved successfully', response.data);
+  return response.data;
 } catch (error) {
-
+  console.error('Error retrieving the post', error.response);
+  throw error;
 }
 }
 

@@ -10,22 +10,23 @@ function SignIn() {
     const { setLoggedin, setUserID } = Users();
 
     const handleSignIn = async () => {
-        try {
-          // Call the imported SignInUser function
+      try {
           const data = await SignInUser(username, password);
           console.log(data)
       
-          // If the call was successful, update the logged-in state and user ID
-          setLoggedin(true);
-          setUserID(data); // Adjust based on the actual structure of your response data
-        } catch (error) {
+          if (data) {
+              setLoggedin(true);
+              setUserID(data); 
+          } 
+      } catch (error) {
           if (error.response && error.response.status === 401) {
-            alert('Incorrect password.');
+              alert('Incorrect username or password.');
           } else {
-            console.error('Error during sign-in:', error.message || error);
+              console.error('Error during sign-in:', error.message || error);
           }
-        }
-      };
+      }
+  };
+  
 
     const handleSubmit = (e) => {
         e.preventDefault();

@@ -54,13 +54,7 @@ async function SignUpUser(firstName, lastName, userName, email, password, dateOf
         dateOfBirth: dateOfBirth,
         dateJoined: new Date().toISOString().slice(0, 10)
     });
-
-    if (response.status === 200 || response.status === 201) {
-        alert('Registration successful');
-    } else {
-        alert('Registration failed');
-    }
-
+   return response
 } catch (error) {
     console.error('Error during registration:', error);
 }

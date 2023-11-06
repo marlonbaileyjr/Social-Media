@@ -9,7 +9,7 @@ import noImg from '../img/NOIMG.jpeg'
 import { Users } from '../hooks/userHooks';
 import {retrievePostByUserId, getPostMedia, getPostByPostId} from '../functions/postFunctions'; 
 import {getUserById} from '../functions/userFunctions';
-import { getFollowed, getFollowers, addFriendship, deleteFriendship } from '../functions/friendshipFunctions'
+import { useFriends } from '../hooks/friendshipHooks';
 import Post from '../props/post';
 
 function ProfilePage(props) {
@@ -26,6 +26,9 @@ function ProfilePage(props) {
   const [isBioModalOpen, setIsBioModalOpen] = useState(false);
   const [isPictureModalOpen, setIsPictureModalOpen] = useState(false);
   const [isNameModalOpen, setIsNameModalOpen] = useState(false);
+
+  const {followers, following, addFriendship, deleteFriendship, checkFriendship} = useFriends()
+
 
   function handleBioIconClick() {
     setIsBioModalOpen(true);
@@ -50,7 +53,6 @@ const fetchUserDetails = useCallback(async () => {
   try {
     const userData = await getUserById(Number(paramUserId));
     setUser(userData);
-    console.log(userData);
   } catch (error) {
     console.error('Error fetching user data:', error);
   }
@@ -68,12 +70,11 @@ function closeModalAndRefresh() {
 
   useEffect(() => {
     fetchUserDetails();
-
+  
     const fetchUser = async () => {
       try {
         const userData = await getUserById(Number(paramUserId));
         setUser(userData);
-        console.log(userData);
       } catch (error) {
         console.error('Error fetching user data:', error);
       }
@@ -83,92 +84,76 @@ function closeModalAndRefresh() {
   
     const fetchUserPosts = async () => {
       try {
-          const userPostsData = await retrievePostByUserId(Number(paramUserId));
-          console.log('profile page posts', userPostsData);
+        const userPostsData = await retrievePostByUserId(Number(paramUserId));
+        console.log('Profile page posts:', userPostsData);
   
-          if (userPostsData && userPostsData.length > 0) {
-              const mediaPromises = userPostsData.map(async post => {
-                  const res = await getPostMedia(post.postId);
-                  console.log('res',res)
-                  const media= res.media
-                  console.log(`Media for post ${post.postId}:`, media);
-                  return {
-                      ...post,
-                      media: media
-                  };
-              });
+        if (userPostsData && userPostsData.length > 0) {
+          const postsWithMedia = await Promise.all(
+            userPostsData.map(async (post) => {
+              const res = await getPostMedia(post.postId);
+              return {
+                ...post,
+                media: res.media
+              };
+            })
+          );
   
-              const postsWithMedia = await Promise.all(mediaPromises);
-              setUserPosts(postsWithMedia);
-          }
+          setUserPosts(postsWithMedia);
+        }
       } catch (error) {
-          console.error('Error fetching user posts:', error);
-          setUserPosts([]);
-      }
-  };
-  
-  fetchUserPosts();
-  
-  
-    // Fetch followers count
-    const fetchFollowers = async () => {
-      try {
-        const followers = await getFollowers(Number(paramUserId));
-        setFollowersCount(followers.length);
-      } catch (error) {
-        console.error('Error fetching followers:', error);
+        console.error('Error fetching user posts:', error);
+        setUserPosts([]);
       }
     };
   
-    // Fetch followed count
-    const fetchFollowed = async () => {
-      try {
-        const followed = await getFollowed(Number(paramUserId));
-        setFollowedCount(followed.length);
-      } catch (error) {
-        console.error('Error fetching followed:', error);
-      }
-    };
-  
-    const checkFollowingStatus = async () => {
-      try {
-        const followers = await getFollowers(Number(paramUserId));
-        const isUserFollowing = followers.some(follower => follower.userId === contextUserId);
-        setIsFollowing(isUserFollowing);
-      } catch (error) {
-        console.error('Error checking following status:', error);
-      }
-    };
+    fetchUserPosts();
     
+  }, [paramUserId, contextUserId, fetchUserDetails]);
+
+  useEffect(()=>{
+    const fetchFollowers = () => {
+      const count = followers[Number(paramUserId)];
+      setFollowersCount(count || 0); // Fallback to 0 if undefined
+      console.log(following)
+    };
+  
+    const fetchFollowed = () => {
+      const count = following[Number(paramUserId)];
+      setFollowedCount(count || 0); // Fallback to 0 if undefined
+    };
+  
     fetchFollowers();
     fetchFollowed();
+  }, [paramUserId, following, followers])
+  
+  useEffect(() => {
+    const checkFollowingStatus = async () => {
+      if (contextUserId !== Number(paramUserId)) {
+        try {
+          const response = await checkFriendship({
+            followerId: contextUserId,
+            followedId: Number(paramUserId)
+          });
+          setIsFollowing(response);
+        } catch (error) {
+          console.error('Error checking following status:', error);
+        }
+      }
+    };
+  
     checkFollowingStatus();
   
-  }, [paramUserId, contextUserId, fetchUserDetails]);
+  }, [checkFriendship, contextUserId, paramUserId]);
   
 
   const handleFollow = async () => {
-    try {
-      await addFriendship(contextUserId, Number(paramUserId));
-      setIsFollowing(true);
-      const updatedFollowers = await getFollowers(Number(paramUserId));
-      setFollowersCount(updatedFollowers.length);
-    } catch (error) {
-      console.error('Error while following user:', error);
-    }
+    addFriendship({followerId:contextUserId, followedId:Number(paramUserId)})
+    setIsFollowing(true)
   };
   
   const handleUnfollow = async () => {
-    try {
-      await deleteFriendship(contextUserId, Number(paramUserId));
-      setIsFollowing(false);
-      // Fetch updated followers count after unfollowing
-      const updatedFollowers = await getFollowers(Number(paramUserId));
-      setFollowersCount(updatedFollowers.length);
-    } catch (error) {
-      console.error('Error while unfollowing user:', error);
-      // Handle the error appropriately, maybe show a message to the user.
-    }
+    deleteFriendship({followerId:contextUserId ,followedId: paramUserId})
+    setIsFollowing(false)
   };
   
 
@@ -288,7 +273,6 @@ function PostModal({ post, onClose }) {
       fetchPostDetails();
     }
   }, [post.postId]);
-  console.log('postsSS',postDetails)
 
   if (!postDetails) {
     return <div>Loading...</div>;
