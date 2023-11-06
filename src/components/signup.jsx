@@ -24,17 +24,9 @@ function SignUp() {
         e.preventDefault();
         try {
             // Call the SignUpUser function and wait for the response
-            const userData = {
-                firstName,
-                lastName,
-                username,
-                email,
-                password,
-                dob
-            };
 
             // Assuming the SignUpUser function returns a Promise
-            const response = await SignUpUser(userData);
+            const response = await SignUpUser(firstName,lastName,username,email,password,dob);
 
             if (response.success) {
                 alert("Signed Up Successfully")

@@ -1,15 +1,30 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { updatePassword } from '../functions/userFunctions'; // Adjust the path as necessary
 import '../css/signin.css';
 
 function ForgotPassword() {
     const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        // Function to handle the email sending logic can be added here.
-        console.log('Email to send reset link:', email);
-    };
+
+    const handleSubmit = async (event) => {
+        event.preventDefault();
+        try {
+          // Here we call the updatePassword function which should be an API call
+          const response = await updatePassword(email, password);
+    
+          // Handle the response according to your application's needs
+          if (response.success) {
+            alert('Password has been updated successfully!');
+          } else {
+            alert('Failed to update password. Please try again later.');
+          }
+        } catch (error) {
+          console.error('Error updating password:', error);
+          alert('An error occurred while updating the password.');
+        }
+      };
 
     return (
         <div className="sign-in-container">
@@ -24,6 +39,15 @@ function ForgotPassword() {
                         className="common-font"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
+                        required
+                    />
+                    <label htmlFor="password" className="common-font">Password:</label>
+                    <input
+                        type="password"
+                        id="password"
+                        className="common-font"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
                         required
                     />
                 </div>

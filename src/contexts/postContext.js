@@ -64,7 +64,9 @@ export function PostProvider({ children }) {
     );
 
     // Mutation to delete a post
-    const deletePostMutation = useMutation(deletePost, {
+    const deletePostMutation = useMutation(
+        ({postId}) => deletePost(postId),
+        {
         onSuccess: () => {
             queryClient.invalidateQueries('posts');
         },
@@ -72,7 +74,9 @@ export function PostProvider({ children }) {
     });
 
     // Mutation to update a post
-    const updatePostMutation = useMutation(updatePost, {
+    const updatePostMutation = useMutation(
+        ({postId, caption, userID}) => updatePost(postId, caption, userID), 
+        {
         onSuccess: () => {
             queryClient.invalidateQueries('posts');
         },

@@ -44,7 +44,9 @@ export function LikeProvider({ children }) {
     );
 
     // Delete like mutation with callbacks
-    const deleteLikeMutation = useMutation(deleteLike, {
+    const deleteLikeMutation = useMutation(
+        ({likeId})=>deleteLike(likeId), 
+        {
         onSuccess: () => {
             queryClient.invalidateQueries('likes');
         },

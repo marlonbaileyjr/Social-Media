@@ -16,7 +16,15 @@ export function CommentProvider({ children }) {
             queryFn: () => getComments(post.postId),
             enabled: !isPostsLoading,
         })) || []
-    );
+    );    
+    
+    // Combine comments from queries into a map
+    const comments = commentQueries.reduce((acc, commentQuery, index) => {
+        if (commentQuery.data && posts) {
+            acc[posts[index].postId] = commentQuery.data;
+        }
+        return acc;
+    }, {});
 
     // Add comment mutation with callbacks
     const addCommentMutation = useMutation(
@@ -34,7 +42,9 @@ export function CommentProvider({ children }) {
       );
 
     // Delete comment mutation with callbacks
-    const deleteCommentMutation = useMutation(deleteComment, {
+    const deleteCommentMutation = useMutation(
+        ({commentId})=>deleteComment(commentId), 
+        {
         onSuccess: () => {
             queryClient.invalidateQueries('comments');
         },
@@ -44,7 +54,9 @@ export function CommentProvider({ children }) {
     });
 
     // Edit comment mutation with callbacks
-    const editCommentMutation = useMutation(editComment, {
+    const editCommentMutation = useMutation(
+        ({commentId,newText })=>editComment(commentId,newText), 
+        {
         onSuccess: () => {
             queryClient.invalidateQueries('comments');
         },
@@ -53,13 +65,7 @@ export function CommentProvider({ children }) {
         },
     });
 
-    // Combine comments from queries into a map
-    const comments = commentQueries.reduce((acc, commentQuery, index) => {
-        if (commentQuery.data && posts) {
-            acc[posts[index].postId] = commentQuery.data;
-        }
-        return acc;
-    }, {});
+
 
     // Context value
     const value = {

@@ -1,12 +1,12 @@
 import React, { createContext } from 'react';
 import { useQueries, useMutation, useQueryClient } from 'react-query';
 import { getFollowers, getFollowed, addFriendship, deleteFriendship, checkFriendship } from '../functions/friendshipFunctions';
-import { useUser } from '../hooks/userHooks';
+import { Users } from '../hooks/userHooks';
 
 export const FriendContext = createContext();
 
 export function FriendProvider({ children }) {
-    const { userID } = useUser();
+    const { userID } = Users();
     const queryClient = useQueryClient();
 
     // Use `useQueries` to fetch all followers and following for userID
@@ -28,16 +28,18 @@ export function FriendProvider({ children }) {
 
     // Map the followersResult data to an array of followers
     const followersArray = followersResult.data
-        ? followersResult.data.map(follower => follower.follower) // Assuming 'follower' is the property you want
+        ? followersResult.data.map(follower => follower.follower) 
         : [];
 
     const followedArray = followersResult.data
-    ? followersResult.data.map(follower => follower.followed) // Assuming 'follower' is the property you want
+    ? followersResult.data.map(follower => follower.followed)
     : [];
 
     //MUTATIONS
 
-    const addFriendshipMutation = useMutation(addFriendship, {
+    const addFriendshipMutation = useMutation(
+       ({followerId,followedId})=> addFriendship(followerId,followedId), 
+        {
         onSuccess: () => {
             queryClient.invalidateQueries(['followers', userID]);
             queryClient.invalidateQueries(['followed', userID]);
@@ -48,7 +50,9 @@ export function FriendProvider({ children }) {
         },
     });
 
-    const deleteFriendshipMutation = useMutation(deleteFriendship, {
+    const deleteFriendshipMutation = useMutation(
+        ({followerId,followedId}) => deleteFriendship(followerId,followedId), 
+        {
         onSuccess: () => {
             queryClient.invalidateQueries(['followers', userID]);
             queryClient.invalidateQueries(['followed', userID]);
@@ -59,7 +63,9 @@ export function FriendProvider({ children }) {
         },
     });
 
-    const checkFriendshipMutation = useMutation(checkFriendship, {
+    const checkFriendshipMutation = useMutation(
+        ({followerId,followedId}) => checkFriendship(followerId,followedId), 
+        {
         onError: (error) => {
             // Handle check friendship error
             console.error('Error checking friendship:', error);
