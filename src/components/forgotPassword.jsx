@@ -1,22 +1,29 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { updatePassword } from '../functions/userFunctions'; // Adjust the path as necessary
 import '../css/signin.css';
 
 function ForgotPassword() {
+    const navigate = useNavigate();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
+    const GoToSignIn = () => {
+      navigate(`/`);
+    };
 
     const handleSubmit = async (event) => {
         event.preventDefault();
         try {
           // Here we call the updatePassword function which should be an API call
           const response = await updatePassword(email, password);
+          console.log(response)
     
           // Handle the response according to your application's needs
-          if (response.success) {
+          if (response.status===200) {
             alert('Password has been updated successfully!');
+            GoToSignIn()
+
           } else {
             alert('Failed to update password. Please try again later.');
           }
@@ -51,7 +58,7 @@ function ForgotPassword() {
                         required
                     />
                 </div>
-                <button type="submit" className="common-button">Send Email</button>
+                <button type="submit" className="common-button">Update Password</button>
             </form>
             <p>
                 <Link to="/">Back to Sign In</Link>

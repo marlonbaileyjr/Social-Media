@@ -5,23 +5,22 @@ import { Users } from '../hooks/userHooks';
 
 export const FriendContext = createContext();
 
-export function FriendProvider({ children }) {
-    const { userID } = Users();
+export function FriendProvider({ children, paramUserId }){
+    const { loggedin} = Users()
     const queryClient = useQueryClient();
 
-    // Use `useQueries` to fetch all followers and following for userID
+    // Use `useQueries` to fetch all followers and following for paramUserId
     const results = useQueries([
         {
-            queryKey: ['followers', userID],
-            queryFn: () => getFollowers(userID),
+            queryKey: ['followers', paramUserId],
+            queryFn: () => getFollowers(paramUserId),
             staleTime: Infinity, 
-            enabled: !!userID, 
+            enabled: loggedin && !(paramUserId == null)
         },
         {
-            queryKey: ['followed', userID],
-            queryFn: () => getFollowed(userID),
-            staleTime: Infinity, 
-            enabled: !!userID, 
+            queryKey: ['followed', paramUserId],
+            queryFn: () => getFollowed(paramUserId),
+            enabled: loggedin && !(paramUserId == null)
         }
     ]);
     
@@ -34,9 +33,9 @@ export function FriendProvider({ children }) {
         ? followersResult.data.map(follower => follower.followerId) 
         : [];
 
-    const followedArray = followersResult.data
-    ? followedResult.data.map(follower => follower.followedId)
-    : [];
+    const followedArray = followedResult.data
+        ? followedResult.data.map(followed => followed.followedId)
+        : [];
 
     //MUTATIONS
 
@@ -44,8 +43,8 @@ export function FriendProvider({ children }) {
        ({followerId,followedId})=> addFriendship(followerId,followedId), 
         {
         onSuccess: () => {
-            queryClient.invalidateQueries(['followers', userID]);
-            queryClient.invalidateQueries(['followed', userID]);
+            queryClient.invalidateQueries(['followers', paramUserId]);
+            queryClient.invalidateQueries(['followed', paramUserId]);
         },
         onError: (error) => {
             // Handle add friendship error
@@ -57,8 +56,8 @@ export function FriendProvider({ children }) {
         ({followerId,followedId}) => deleteFriendship(followerId,followedId), 
         {
         onSuccess: () => {
-            queryClient.invalidateQueries(['followers', userID]);
-            queryClient.invalidateQueries(['followed', userID]);
+            queryClient.invalidateQueries(['followers', paramUserId]);
+            queryClient.invalidateQueries(['followed', paramUserId]);
         },
         onError: (error) => {
             // Handle delete friendship error
@@ -75,11 +74,12 @@ export function FriendProvider({ children }) {
         },
     });
 
+    console.log('checkfren', checkFriendshipMutation)
 
     // Construct the value to be provided to the context consumers
     const value = {
         followers: followersArray,
-        following: followedArray || [],
+        following: followedArray,
         isFriendsLoading: followersResult.isLoading || followedResult.isLoading,
         friendsError: (followersResult.error || followedResult.error) ? [followersResult.error, followedResult.error] : null,
         addFriendship: addFriendshipMutation.mutate,

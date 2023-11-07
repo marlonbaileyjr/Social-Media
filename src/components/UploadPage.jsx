@@ -2,13 +2,15 @@ import React, { useState } from 'react';
 import { usePosts } from '../hooks/postHooks';
 import { Users } from '../hooks/userHooks';
 import '../css/uploadpage.css';
+import { useNavigate } from 'react-router-dom';
 
 function UploadPage() {
+    const navigate = useNavigate()
     const [caption, setCaption] = useState('');
     const [imageUrls, setImageUrls] = useState([]);
     const [isUploading, setIsUploading] = useState(false);
     const { userID } = Users();
-    const {uploadPostPicture, createPost}=usePosts()
+    const {uploadPostPicture, createPostMutation}=usePosts()
 
     const handleImageChange = (e) => {
         const files = Array.from(e.target.files).slice(0, 3 - imageUrls.length); // Limiting to 3 minus whatever's already been uploaded
@@ -30,32 +32,48 @@ function UploadPage() {
         }
     };
     
-    const handleUpload = async () => {
-        setIsUploading(true); // Assuming setIsUploading sets a state indicating the upload is in progress
-        try {
-            //Create the post and get the post ID
-            const Response = createPost({caption: caption, userId:userID});
-            console.log('reponse',Response)
-            const postID = Response.data.postId; // Adjusted according to the correct response structure
-
-            console.log('Post created with ID:', postID);
+    const handleUpload = () => {
+        setIsUploading(true);
     
-            // Upload each image with the correct order, assuming uploadPostPicture is defined elsewhere
-            const uploadPromises = imageUrls.map((image, index) =>
-            uploadPostPicture({postId:postID, order: index + 1, mediaFile: image})
-            );
+        // This triggers the mutation and specifies callbacks for success or failure
+        createPostMutation.mutate(
+            { caption: caption, userId: Number(userID) },
+            {
+                onSuccess: async (response) => {
+                    console.log('Response:', response);
+                    const postID = response.postId;
     
-            // Wait for all images to finish uploading
-            await Promise.all(uploadPromises);
-            alert('Post and images uploaded successfully!');
-        } catch (error) {
-            console.error('Failed to upload post or images:', error);
-            alert('There was an error uploading your post.');
-        } finally {
-            setIsUploading(false); // Reset the uploading state regardless of the outcome
-        }
+                    // Now that we have the postID, we can upload the images
+                    try {
+                        const uploadPromises = imageUrls.map((image, index) =>
+                            uploadPostPicture({
+                                postId: postID,
+                                order: index + 1,
+                                mediaFile: image,
+                            })
+                        );
+        
+                        // Wait for all images to finish uploading
+                        await Promise.all(uploadPromises);
+                        alert('Post and images uploaded successfully!');
+                    } catch (uploadError) {
+                        console.error('Failed to upload images:', uploadError);
+                        alert('There was an error uploading your images.');
+                    }
+                    
+                    setIsUploading(false);
+                    navigate('/')
+                },
+                onError: (error) => {
+                    // Handle the error case
+                    console.error('Failed to create post:', error);
+                    alert('There was an error creating your post.');
+                    setIsUploading(false);
+                },
+            }
+        );
     };
-
+    
 
     return (
         <div className="upload-page">

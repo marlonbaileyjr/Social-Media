@@ -37,7 +37,8 @@ function Header() {
   };
   const logOut = () => {
     setLoggedin(false);
-    setMenuVisible(false); // Close the menu when signing out
+    setMenuVisible(false);
+    navigate('/') // Close the menu when signing out
   };
 
   return (
@@ -45,9 +46,11 @@ function Header() {
       <div className="logo" onClick={navigateToMain}>
         MyLogo
       </div>
-      <div className="search-icon" onClick={openSearchModal}>
-        <i className="fas fa-search"></i>
-      </div>
+
+        <div className="search-icon">
+          <i className="fas fa-search" onClick={openSearchModal}></i>
+        </div>
+
       <div className={`menu-icon ${menuVisible ? 'open' : ''}`} onClick={toggleMenu}>
         <i className="fa fa-bars"></i>
       </div>

@@ -1,19 +1,24 @@
 import React, { useState } from 'react';
 import { updateProfilePicture, updateBio } from '../functions/userFunctions';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { Users } from '../hooks/userHooks';
 
 
 
 const ProfilePictureAndBio = () => {
+    const navigate = useNavigate();
     const { userId } = useParams()
-    const {setUserID,setLoggedin} = Users()
+    const {setUserID, setLoggedin} = Users()
     setUserID(userId)
-  const [profilePicture, setProfilePicture] = useState(null);
-  const [bio, setBio] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
+    const [profilePicture, setProfilePicture] = useState(null);
+    const [bio, setBio] = useState('');
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const login=()=>{
+    setLoggedin(true)
+  navigate(`/`);
 
+  }
 
   const handlePictureChange = (event) => {
     setProfilePicture(event.target.files[0]);
@@ -31,9 +36,10 @@ const ProfilePictureAndBio = () => {
         await updateProfilePicture(userId, profilePicture);
       }
       if (bio) {
-        await updateBio(userId, bio);
+        await updateBio(Number(userId), bio);
       }
       alert('Profile updated successfully!');
+      login()
     } catch (error) {
       console.error('Error updating profile:', error);
       alert('There was an error updating your profile. Please try again later.');
@@ -53,6 +59,7 @@ const ProfilePictureAndBio = () => {
             id="profilePicture"
             onChange={handlePictureChange}
             disabled={isSubmitting}
+            accept="image/jpeg, image/png, image/gif"
           />
         </div>
         <div>
@@ -68,7 +75,7 @@ const ProfilePictureAndBio = () => {
           {isSubmitting ? 'Updating...' : 'Update Profile'}
         </button>
       </form>
-      <button onClick={() => setLoggedin(true)} disabled={isSubmitting}>
+      <button onClick={() =>login()} disabled={isSubmitting}>
         Skip
       </button>
     </div>

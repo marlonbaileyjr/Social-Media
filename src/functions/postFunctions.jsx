@@ -1,4 +1,7 @@
 import axios from 'axios';
+function delay(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
 
 async function createPost(caption, userId) {
   console.log('create', caption, userId)
@@ -14,16 +17,15 @@ async function createPost(caption, userId) {
 
   try {
     const response = await axios.post(url, body);
-
-    return response
+    return response.data
   } catch (error) {
     console.error('Error creating the post', error.response);
-    // handle the error as needed
   }
 }
 
 async function fetchPosts() {
   const url = 'http://localhost:8080/api/v1/posts';
+  await delay(4000);
 
   try {
     const response = await axios.get(url);
@@ -52,17 +54,21 @@ async function deletePost(postId) {
 }
 
 async function retrievePostByUserId(userId){
-const url = `http://localhost:8080/api/v1/posts/retrievePost/${userId}`
 
-try {
-  const response = await axios.get(url);
-  console.log('Post retrieved successfully', response.data);
-  return response.data;
-} catch (error) {
-  console.error('Error retrieving the post', error.response);
-  throw error;
 }
-}
+
+async function retrieveFriendPosts(userId){
+  const url = `http://localhost:8080/api/v1/posts/retrievePost/${userId}`
+  
+  try {
+    const response = await axios.get(url);
+    console.log('Post retrieved successfully', response.data);
+    return response.data;
+  } catch (error) {
+    console.error('Error retrieving the post', error.response);
+    throw error;
+  }
+  }
 
 async function getPostByPostId(postId) {
   const url = `http://localhost:8080/api/v1/posts/getPost/${postId}`;
@@ -93,19 +99,6 @@ async function updatePost(postId, caption, userId) {
     return response.data;
   } catch (error) {
     console.error('Error updating the post', error.response);
-    throw error;
-  }
-}
-
-async function retrieveFriendPosts(userId) {
-  const url = `http://localhost:8080/api/v1/posts/retrievePost/${userId}`;
-
-  try {
-    const response = await axios.get(url);
-    console.log('Post retrieved successfully', response.data);
-    return response.data;
-  } catch (error) {
-    console.error('Error retrieving the post', error.response);
     throw error;
   }
 }

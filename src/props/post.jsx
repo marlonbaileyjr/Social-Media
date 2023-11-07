@@ -105,6 +105,7 @@ function Post({ postId, caption, userId, likes, comments }) {
   };
 
   return (
+
     <div className="post-container">
       <div className="profile-bar" onClick={() => navigateToProfile(user.userId)}>
         {user && user.profilePicture && (
@@ -160,6 +161,7 @@ function CommentsDropdown({ comments, postId}) {
   const [text, setText] = useState('');
 
   return (
+
     <div className="comments-dropdown">
       <div className="comments-scroll-box">
         {processedComments.map((comment) => (
@@ -180,6 +182,7 @@ function CommentsDropdown({ comments, postId}) {
       });
       }}>Add Comment</button>
     </div>
+
   );
 }
 
@@ -192,6 +195,7 @@ function CommentComponent({ comment, postId }) {
   const [showCommentBox, setShowCommentBox] = useState(false);
 
   return (
+
     <div className="comment">
       <div className="comment-content">
         <p className="reply-button" onClick={(e) => {
@@ -232,6 +236,7 @@ function CommentComponent({ comment, postId }) {
         </div>
       )}
     </div>
+
   );
 }
 

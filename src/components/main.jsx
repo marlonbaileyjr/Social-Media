@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import '../css/styles.css';
 import ScrollScreen from '../props/ScrollScreen';
 import {usePosts} from '../hooks/postHooks'
-
+import { CommentProvider } from '../contexts/commentContext';
+import { LikeProvider } from '../contexts/likeContext';
 
 function Main() {
   
@@ -26,6 +27,9 @@ function Main() {
   };
 
   return (
+
+    <LikeProvider>
+    <CommentProvider>
     <div>
       <div className="selection-bar">
         <div
@@ -43,6 +47,9 @@ function Main() {
       </div>
       <ScrollScreen items={currentItems} />
     </div>
+    </CommentProvider>
+    </LikeProvider>
+
   );
 }
 

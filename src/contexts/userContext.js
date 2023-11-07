@@ -4,12 +4,15 @@ export const UserContext = createContext({
   userID: '',
   setUserID: () => {},
   loggedin: false,
-  setLoggedin: () => {}
+  setLoggedin: () => {},
+  paramUserId:'',
+  setParam:() => {},
 });
 
 export function UserContextProvider(props) {
   const [loggedin, setLoggedin] = useState(false);
   const [userID, setUserID] = useState('');
+  const [paramUserId, setParam] = useState('')
 
 
 
@@ -20,7 +23,9 @@ export function UserContextProvider(props) {
         loggedin, 
         setLoggedin, 
         userID, 
-        setUserID }}
+        setUserID,
+        setParam,
+        paramUserId }}
     >
       {props.children}
     </UserContext.Provider>

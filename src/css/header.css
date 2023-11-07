@@ -16,6 +16,10 @@
   flex-shrink: 0; /* Ensure the logo doesn't shrink */
 }
 
+
+.searchIconHolder{
+  flex-grow: 1;
+}
 .search-icon {
   font-size: 24px;
   cursor: pointer;

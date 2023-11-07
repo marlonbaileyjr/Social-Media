@@ -59,7 +59,7 @@ function ProfilePictureModal({ isOpen, onClose, Picture }) {
           alt="Profile"
           className="current-profile-picture"
         />
-        <input type="file" onChange={handlePictureChange} disabled={loading} />
+        <input type="file" onChange={handlePictureChange} disabled={loading} accept="image/jpeg, image/png, image/gif"/>
         <button onClick={handleSubmit} disabled={loading}>
           {loading ? 'Updating...' : 'Submit Picture'}
         </button>

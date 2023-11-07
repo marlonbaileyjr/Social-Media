@@ -75,29 +75,29 @@ function ScrollScreen({ items = [] }) {
   };
 
   return (
-    <div 
-        className="scroll-container"
-        onMouseDown={handleMouseDown}
-        onMouseMove={handleMouseMove}
-        onMouseUp={handleMouseUp}
-        onTouchStart={handleTouchStart}
-        onTouchEnd={handleTouchEnd}
-    >
-       {items.map((item, index) => (
-          <div key={item.postId} className={`scroll-item ${index === activeIndex ? 'active' : ''}`}>
-              <Post 
-                postId={item.postId} 
-                caption={item.caption} 
-                userId={item.userId} 
-                likes={likes[item.postId]}
-                comments={comments[item.postId]}
-              />
-          </div>
-        ))}
+      <div 
+          className="scroll-container"
+          onMouseDown={handleMouseDown}
+          onMouseMove={handleMouseMove}
+          onMouseUp={handleMouseUp}
+          onTouchStart={handleTouchStart}
+          onTouchEnd={handleTouchEnd}
+      >
+        {items.map((item, index) => (
+            <div key={item.postId} className={`scroll-item ${index === activeIndex ? 'active' : ''}`}>
+                <Post 
+                  postId={item.postId} 
+                  caption={item.caption} 
+                  userId={item.userId} 
+                  likes={likes[item.postId]}
+                  comments={comments[item.postId]}
+                />
+            </div>
+          ))}
 
-        {activeIndex > 0 && <button className="prev-button" onClick={prevItem}>Previous</button>}
-        {activeIndex < items.length - 1 && <button className="next-button" onClick={nextItem}>Next</button>}
-    </div>
+          {activeIndex > 0 && <button className="prev-button" onClick={prevItem}>Previous</button>}
+          {activeIndex < items.length - 1 && <button className="next-button" onClick={nextItem}>Next</button>}
+      </div>
 );
 }
 

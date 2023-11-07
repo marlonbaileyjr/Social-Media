@@ -1,7 +1,6 @@
 import { createContext } from 'react';
 import { useQuery, useMutation, useQueryClient } from 'react-query';
-import { createPost, fetchPosts, deletePost, getPostByPostId, updatePost, uploadPostPicture, getPostMedia  } from '../functions/postFunctions';
-import { getFollowers } from '../functions/friendshipFunctions';
+import { createPost, fetchPosts, deletePost, getPostByPostId, updatePost, uploadPostPicture, getPostMedia, retrieveFriendPosts  } from '../functions/postFunctions';
 import { Users } from '../hooks/userHooks';
 
 export const PostContext = createContext();
@@ -17,23 +16,15 @@ export function PostProvider({ children }) {
     });
 
     // Fetch friend posts using React Query, but only if logged in and userID is defined
-    const {
-        data: friendPosts,
-        isLoading: isFriendPostsLoading,
-        error: friendPostsError,
-    } = useQuery(
+    const { data: friendPosts, isLoading: isFriendPostsLoading, error: friendPostsError } = useQuery(
         ['friendPosts', userID],
-        () => getFollowers(userID).then((followers) => {
-            // Make sure posts are loaded before filtering
-            return posts?.filter((post) => 
-                followers.some((follower) => follower.followedId === post.userId)
-            );
-        }),
+        () => retrieveFriendPosts(userID),
         {
-            // Only run the query if the user is logged in, userID is defined, and posts have been fetched
+            staleTime: Infinity,
             enabled: loggedin && !!userID && !!posts,
         }
     );
+    
 
     // Filter out the user's own posts from the fetched posts
     const userPosts = posts?.filter((post) => post.userId === userID) || [];
@@ -53,15 +44,18 @@ export function PostProvider({ children }) {
 
     // Mutation to create a new post
     const createPostMutation = useMutation(
-            ({ caption, userId}) => createPost(caption, userId),
-            {
-        onSuccess: () => {
-            // Invalidate and refetch
+        ({ caption, userId }) => createPost(caption, userId),
+        {
+          onSuccess: () => {
             queryClient.invalidateQueries('posts');
-        },
-        // Optionally, add onError or onSettled callbacks
-    }
-    );
+          },
+          onError: (error) => {
+            console.error("Error creating the post:", error);
+          },
+          onSettled: () => {
+          },
+        }
+      );
 
     // Mutation to delete a post
     const deletePostMutation = useMutation(
@@ -108,7 +102,7 @@ export function PostProvider({ children }) {
             friendPostsError,
             usePostDetails,
             usePostMediaDetails,
-            createPost: createPostMutation.mutate,
+            createPostMutation,
             deletePost: deletePostMutation.mutate,
             updatePost: updatePostMutation.mutate,
             uploadPostPicture: uploadPostPictureMutation.mutate,

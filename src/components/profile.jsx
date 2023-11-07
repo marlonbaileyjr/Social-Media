@@ -12,9 +12,13 @@ import {getUserById} from '../functions/userFunctions';
 import { useFriends } from '../hooks/friendshipHooks';
 import Post from '../props/post';
 
-function ProfilePage(props) {
-  const { userID: contextUserId } = Users();
+function ProfilePage() {
+
+  const { userID: contextUserId, setParam } = Users();
+  console.log('context', contextUserId)
   const { USER_ID: paramUserId } = useParams();
+  console.log('param', paramUserId)
+  setParam(paramUserId)
 
   const [user, setUser] = useState(null);
   const [userPosts, setUserPosts] = useState([]);
@@ -66,7 +70,7 @@ function closeModalAndRefresh() {
   fetchUserDetails(); // Re-fetch user data when modal closes
 }
 
-  const canEdit = Number(paramUserId) === contextUserId;
+  const canEdit = Number(paramUserId) === Number(contextUserId);
 
   useEffect(() => {
     fetchUserDetails();
@@ -112,14 +116,13 @@ function closeModalAndRefresh() {
 
   useEffect(()=>{
     const fetchFollowers = () => {
-      const count = followers[Number(paramUserId)];
-      setFollowersCount(count || 0); // Fallback to 0 if undefined
-      console.log(following)
+      const count = followers.length;
+      setFollowersCount(count );
     };
   
     const fetchFollowed = () => {
-      const count = following[Number(paramUserId)];
-      setFollowedCount(count || 0); // Fallback to 0 if undefined
+      const count = following.length;
+      setFollowedCount(count );
     };
   
     fetchFollowers();
@@ -143,17 +146,15 @@ function closeModalAndRefresh() {
   
     checkFollowingStatus();
   
-  }, [checkFriendship, contextUserId, paramUserId]);
+  }, [checkFriendship, contextUserId, paramUserId,]);
   
 
   const handleFollow = async () => {
     addFriendship({followerId:contextUserId, followedId:Number(paramUserId)})
-    setIsFollowing(true)
   };
   
   const handleUnfollow = async () => {
     deleteFriendship({followerId:contextUserId ,followedId: paramUserId})
-    setIsFollowing(false)
   };
   
 
@@ -222,7 +223,7 @@ function closeModalAndRefresh() {
         <span>
           <strong>{followedCount}</strong> following
         </span>
-        {contextUserId !== Number(paramUserId) && (
+        {Number(contextUserId) !== Number(paramUserId) && (
           isFollowing
             ? <button onClick={handleUnfollow}>Unfollow</button>
             : <button onClick={handleFollow}>Follow</button>

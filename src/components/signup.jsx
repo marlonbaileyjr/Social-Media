@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import { SignUpUser } from '../functions/userFunctions';
 
 function SignUp() {
-    const { setLoggedin, setUserID } = Users();
+    const { setUserID } = Users();
     const navigate = useNavigate();
 
     const [firstName, setFirstName] = useState('');
@@ -28,8 +28,7 @@ function SignUp() {
             if (response.status === 200) {
                 alert("Signed Up Successfully")
                 const id= response.data.userId
-                setUserID(id)
-                setLoggedin(true)
+                setUserID(Number(id))
                 goToPictureAndBio(id)
             } else {
                 alert('Sign-up failed:', response.message);

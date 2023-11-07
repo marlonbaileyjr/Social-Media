@@ -6,7 +6,6 @@ import axios from "axios";
         const response = await axios.get(url);
         return response.data;
       } catch (error) {
-        alert("There was an error fetching the followed users: ", error);
         throw error; 
       }
     }
@@ -16,7 +15,6 @@ import axios from "axios";
         const response = await axios.get(`http://localhost:8080/api/friendship/${userId}`);
         return response.data;
       } catch (error) {
-        alert('Error fetching followers users:', error);
         throw error;
       }
     }
@@ -66,7 +64,7 @@ import axios from "axios";
         return false
       }
     } catch (error) {
-      alert('Error checking friendship:', error);
+      console.log('Error checking friendship:', error);
     }
   }
     

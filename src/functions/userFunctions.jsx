@@ -87,15 +87,9 @@ async function updatePassword(email, newPassword) {
     };
 
     const response = await axios.put('http://localhost:8080/api/v1/users/updatePassword', requestBody);
-
-    if (response.status === 200) {
-      console.log('Password updated successfully');
-    } else {
-      console.error('Failed to update password. Status code:', response.status);
-      throw new Error(`Failed to update password. Status code: ${response.status}`);
-    }
+    return response
+   
   } catch (error) {
-    console.error('Error updating password:', error.message || error);
     throw error;
   }
 }
@@ -186,7 +180,7 @@ async function updateBio(userId, newBio) {
       newBio: newBio
     };
 
-    const response = await axios.post('http://localhost:8080/api/v1/users/updateBio', requestBody);
+    const response = await axios.put('http://localhost:8080/api/v1/users/updateBio', requestBody);
 
     if (response.status === 200) {
       console.log('Bio updated successfully.');
