@@ -29,5 +29,7 @@ public interface FriendshipRepository extends JpaRepository<Friendship, Integer>
 
     // Delete a friendship
     void deleteByFollowerUserIdAndFollowedUserId(int followerUserId, int followedUserId);
+
+    List<Friendship> findByFollowerAndFollowed(User follower, User followed);
 }
 

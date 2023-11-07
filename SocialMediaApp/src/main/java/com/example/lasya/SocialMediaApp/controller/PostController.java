@@ -132,11 +132,29 @@ public class PostController {
 
     @ApiOperation(value = "This API is used to get posts based on userId")
     @GetMapping(value = "/api/v1/posts/retrievePost/{userId}")
-    public List<Post> getPostsFromFriends(@PathVariable int userId) {
+    public Map<String, Object> getPostsFromFriends(@PathVariable int userId) {
         User user = userRepository.findById(userId).orElse(null);
         logger.info("UserId: " + userId);
         if (user != null) {
             List<Post> posts = postService.findPostsFromFriendsByUserId(userId);
+            logger.info("Posts: " + posts);
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("userId", userId);
+            response.put("posts", posts);
+
+            return response;
+        }
+        throw new UserNotFoundException("User not found with userId: " + userId);
+    }
+
+    @ApiOperation(value = "This API is used to get posts that a user has posted based on the userId")
+    @GetMapping(value = "/api/v1/posts/getPosts/{userId}")
+    public List<Post> getPostsFromUser(@PathVariable int userId) {
+        User user = userRepository.findById(userId).orElse(null);
+        logger.info("UserId: " + userId);
+        if (user != null) {
+            List<Post> posts = postService.findByUserUserId(userId);
             logger.info("Posts: " + posts);
             return posts;
         }

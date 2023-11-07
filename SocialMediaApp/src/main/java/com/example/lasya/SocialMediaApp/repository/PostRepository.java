@@ -14,6 +14,8 @@ import java.util.List;
 @Repository
 public interface PostRepository extends JpaRepository<Post, Integer> {
 
+    List<Post> findByUserUserId(int userId);
+
     List<Post> findByPostId(int postId);
 
     List<Post> findAll();
