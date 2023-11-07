@@ -172,11 +172,6 @@ public class PostServiceImpl implements PostService {
         return postRepository.findByUserUserId(userId);
     }
 
-    @Override
-    public boolean doesPostExistForUser(int userId) {
-        return false;
-    }
-
     private PostBean getBeanFromEntity(Post post) {
         PostBean postBean = new PostBean();
         postBean.setPostId(post.getPostId());

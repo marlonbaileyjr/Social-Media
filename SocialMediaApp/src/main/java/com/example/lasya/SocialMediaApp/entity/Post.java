@@ -50,6 +50,12 @@ public class Post {
     public String toString() {
         return "Post{postId=" + postId + ", caption='" + caption + "', uploadTime=" + uploadTime + "}";
     }
+    public Post(int postId, String caption, java.sql.Date uploadTime, int userId) {
+        this.postId = postId;
+        this.caption = caption;
+        this.uploadTime = uploadTime;
+        this.user = new User(userId);
+    }
 
 }
 

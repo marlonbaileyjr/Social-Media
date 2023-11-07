@@ -20,7 +20,7 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
 
     List<Post> findAll();
 
-    @Query("SELECT p FROM Post p INNER JOIN Friendship f ON p.user.userId = f.followedId WHERE f.follower.userId = :userId")
+    @Query("SELECT NEW com.example.lasya.SocialMediaApp.entity.Post (p.postId, p.caption, p.uploadTime, p.user.userId)  FROM Post p INNER JOIN Friendship f ON p.user.userId = f.followedId WHERE f.follower.userId = :userId")
     List<Post> findPostsFromFriendsByUserId(int userId);
 
     @Query("SELECT p.media FROM Pictures p WHERE p.post.postId = :postId")

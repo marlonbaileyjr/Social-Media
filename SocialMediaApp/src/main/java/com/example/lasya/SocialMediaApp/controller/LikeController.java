@@ -75,6 +75,12 @@ public class LikeController {
         String uploadTimeStr = (String) likeData.get("uploadTime");
         // Parse the uploadTime string to a Timestamp
         Timestamp uploadTime = Timestamp.valueOf(LocalDateTime.parse(uploadTimeStr, DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'")));
+
+        // Check if a like with the same userId and postId already exists
+        if (likeService.doesLikeExist(userId, postId)) {
+            return ResponseEntity.badRequest().body("Like already exists.");
+        }
+
         likeService.addLikeToPost(userId, postId, uploadTime);
         return ResponseEntity.ok("Like added successfully.");
     }
