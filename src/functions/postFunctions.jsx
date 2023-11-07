@@ -25,7 +25,7 @@ async function createPost(caption, userId) {
 
 async function fetchPosts() {
   const url = 'http://localhost:8080/api/v1/posts';
-  await delay(4000);
+  //await delay(4000);
 
   try {
     const response = await axios.get(url);
@@ -54,7 +54,15 @@ async function deletePost(postId) {
 }
 
 async function retrievePostByUserId(userId){
-
+  const url = `http://localhost:8080/api/v1/posts/getPosts/${userId}`
+  try {
+    const response = await axios.get(url);
+    console.log('Post retrieved successfully', response.data);
+    return response.data;
+  } catch (error) {
+    console.error('Error retrieving the post', error.response);
+    throw error;
+  }
 }
 
 async function retrieveFriendPosts(userId){

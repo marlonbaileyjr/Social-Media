@@ -54,16 +54,14 @@ function Post({ postId, caption, userId, likes, comments }) {
 
 
   const handleLikeClick = async () => {
-    // If the post is already liked, unlike it.
   if (liked) {
     try {
-      //deleteLike(userID, postId);
+      deleteLike(userID, postId);
       setLiked(false);
     } catch (error) {
       console.error('Error unliking the post:', error);
     }
   }
-  // If the post is not liked, like it.
   else {
     try {
       addLike({userId: userID, postId: postId});

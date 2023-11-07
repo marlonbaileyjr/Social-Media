@@ -11,6 +11,9 @@ import {retrievePostByUserId, getPostMedia, getPostByPostId} from '../functions/
 import {getUserById} from '../functions/userFunctions';
 import { useFriends } from '../hooks/friendshipHooks';
 import Post from '../props/post';
+import { useLikes } from '../hooks/likeHooks';
+import { useComments } from '../hooks/commentHooks';
+import LoadingScreen from '../components/loadingScreen'
 
 function ProfilePage() {
 
@@ -70,8 +73,8 @@ function closeModalAndRefresh() {
   fetchUserDetails(); // Re-fetch user data when modal closes
 }
 
-  const canEdit = Number(paramUserId) === Number(contextUserId);
-
+  const canEdit = Number(paramUserId) === Number(contextUserId);  
+  
   useEffect(() => {
     fetchUserDetails();
   
@@ -97,10 +100,11 @@ function closeModalAndRefresh() {
               const res = await getPostMedia(post.postId);
               return {
                 ...post,
-                media: res.media
+                media: res
               };
             })
           );
+          console.log('medi', postsWithMedia)
   
           setUserPosts(postsWithMedia);
         }
@@ -129,34 +133,45 @@ function closeModalAndRefresh() {
     fetchFollowed();
   }, [paramUserId, following, followers])
   
-  useEffect(() => {
-    const checkFollowingStatus = async () => {
-      if (contextUserId !== Number(paramUserId)) {
-        try {
-          const response = await checkFriendship({
-            followerId: contextUserId,
-            followedId: Number(paramUserId)
-          });
-          setIsFollowing(response);
-        } catch (error) {
-          console.error('Error checking following status:', error);
-        }
+  const checkFollowingStatus = useCallback(async () => {
+    if (contextUserId !== Number(paramUserId)) {
+      try {
+        const response = await checkFriendship({
+          followerId: contextUserId,
+          followedId: Number(paramUserId)
+        });
+        setIsFollowing(response);
+      } catch (error) {
+        console.error('Error checking following status:', error);
       }
-    };
+    }
+  }, [checkFriendship, contextUserId, paramUserId]);
   
+  // Use checkFollowingStatus inside a useEffect hook to run it when the component mounts or dependencies change
+  useEffect(() => {
     checkFollowingStatus();
-  
-  }, [checkFriendship, contextUserId, paramUserId,]);
+  }, [checkFollowingStatus]);
   
 
-  const handleFollow = async () => {
-    addFriendship({followerId:contextUserId, followedId:Number(paramUserId)})
-  };
+  const handleFollow = useCallback(async () => {
+    try {
+      await addFriendship({ followerId: contextUserId, followedId: Number(paramUserId) });
+      // After the friendship is added, re-check the following status
+      await checkFollowingStatus();
+    } catch (error) {
+      console.error('Error handling follow:', error);
+    }
+  }, [addFriendship, contextUserId, paramUserId, checkFollowingStatus]);
   
-  const handleUnfollow = async () => {
-    deleteFriendship({followerId:contextUserId ,followedId: paramUserId})
-  };
-  
+  const handleUnfollow = useCallback(async () => {
+    try {
+      await deleteFriendship({ followerId: contextUserId, followedId: Number(paramUserId) });
+      // After the friendship is removed, re-check the following status
+      await checkFollowingStatus();
+    } catch (error) {
+      console.error('Error handling unfollow:', error);
+    }
+  }, [deleteFriendship, contextUserId, paramUserId, checkFollowingStatus]);
 
   function handlePostClick(post) {
     setSelectedPost(post);
@@ -169,7 +184,7 @@ function closeModalAndRefresh() {
   }
 
   if (!user) {
-    return <div>Loading...</div>;
+    return <LoadingScreen/>;
   }
 
   return (
@@ -234,7 +249,7 @@ function closeModalAndRefresh() {
         {userPosts.map((post) => (
           <img 
             key={post.pictureId} 
-            src={post.media ? `data:image/jpeg;base64,${post.media}` : noImg} 
+            src={post.media.length > 0 ? `data:image/jpeg;base64,${post.media[0]}` : noImg}
             alt="User post" 
             className="post-image" 
             onClick={() => handlePostClick(post)}
@@ -256,6 +271,8 @@ function closeModalAndRefresh() {
 }
 
 function PostModal({ post, onClose }) {
+  const{likes}=useLikes()
+  const {comments} = useComments()
   const [postDetails, setPostDetails] = useState(null);
 
   useEffect(() => {
@@ -265,13 +282,13 @@ function PostModal({ post, onClose }) {
         setPostDetails(postData);
       } catch (error) {
         console.error('Error fetching post details:', error);
-        // Handle the error state appropriately, maybe set post details to null or show an error message
-        setPostDetails(null); // or any other error handling logic
+        setPostDetails(null); 
       }
     };
     
     if (post.postId) {
       fetchPostDetails();
+
     }
   }, [post.postId]);
 
@@ -282,7 +299,7 @@ function PostModal({ post, onClose }) {
   return (
     <div className="modal">
       <button className="close-button" onClick={onClose}>&times;</button>
-      <Post postId={post.postId} caption={postDetails.post.caption} userId={postDetails.post.userId}/>
+      <Post postId={post.postId} caption={postDetails.caption} userId={postDetails.userId} likes={likes[post.postId]} comments={comments[post.postId]}/>
     </div>
   );
 }
