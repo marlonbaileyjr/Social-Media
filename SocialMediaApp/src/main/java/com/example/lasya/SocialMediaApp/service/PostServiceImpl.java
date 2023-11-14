@@ -167,6 +167,11 @@ public class PostServiceImpl implements PostService {
         return null;
     }
 
+    @Override
+    public List<Post> findByUserUserId(int userId) {
+        return postRepository.findByUserUserId(userId);
+    }
+
     private PostBean getBeanFromEntity(Post post) {
         PostBean postBean = new PostBean();
         postBean.setPostId(post.getPostId());

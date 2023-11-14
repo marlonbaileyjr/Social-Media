@@ -26,4 +26,9 @@ public interface LikeRepository extends JpaRepository<Like, Integer> {
     void deleteLikeById(@Param("likeId") int likeId);
 
     boolean existsByLikeId(int likeId);
+
+//    boolean existsByUserIdAndPostId(int userId, int postId);
+
+    List<Like> findLikesByUserUserIdAndPostPostId(int userId, int postId);
 }
+

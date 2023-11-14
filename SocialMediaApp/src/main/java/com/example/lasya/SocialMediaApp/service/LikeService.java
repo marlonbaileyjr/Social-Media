@@ -16,4 +16,6 @@ public interface LikeService {
     ResponseEntity<String> deleteLikeById(int likeId);
 
     public boolean checkIfLikeExists(int likeId);
+
+    boolean doesLikeExist(int userId, int postId);
 }

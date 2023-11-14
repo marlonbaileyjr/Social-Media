@@ -33,5 +33,7 @@ public interface PostService {
     Post findPostByPostId(int postId);
 
     Pictures getLatestPictureByPostId(int postId);
+
+    List<Post> findByUserUserId(int userId);
 }
 

@@ -1,5 +1,6 @@
 package com.example.lasya.SocialMediaApp.service;
 
+import com.example.lasya.SocialMediaApp.entity.Like;
 import com.example.lasya.SocialMediaApp.exception.PostNotFoundException;
 import com.example.lasya.SocialMediaApp.repository.LikeRepository;
 import com.example.lasya.SocialMediaApp.repository.PostRepository;
@@ -68,8 +69,9 @@ public class LikeServiceImpl implements LikeService {
         return likeRepository.existsByLikeId(likeId);
     }
 
-//    @Override
-//    public boolean checkIfLikeExists(int likeId) {
-//        return likeRepository.existsByLikeId(likeId);
-//    }
+    @Override
+    public boolean doesLikeExist(int userId, int postId) {
+        List<Like> existingLikes = likeRepository.findLikesByUserUserIdAndPostPostId(userId, postId);
+        return !existingLikes.isEmpty();
+    }
 }

@@ -30,20 +30,27 @@ public class FriendshipServiceImpl implements FriendshipService{
     @Override
     @Transactional
     public Friendship addFriendship(User follower, User followed, LocalDateTime uploadTime) {
-        logger.info("inside addFriendship service impl");
+        logger.info("Inside addFriendship service impl");
+
+        // Check if the friendship already exists
+        List<Friendship> existingFriendships = friendshipRepository.findByFollowerAndFollowed(follower, followed);
+        if (!existingFriendships.isEmpty()) {
+            // Friendship already exists, return the first one
+            Friendship existingFriendship = existingFriendships.get(0);
+            logger.info("Friendship already exists");
+            return existingFriendship;
+        }
         // Convert LocalDateTime to Date
         Date sqlUploadTime = Date.valueOf(uploadTime.toLocalDate());
-        // Call the custom query to insert a new friendship
         friendshipRepository.addFriendship(follower.getUserId(), followed.getUserId(), sqlUploadTime);
-        // You can return the created friendship if needed
         Friendship friendship = new Friendship();
         friendship.setFollower(follower);
         friendship.setFollowed(followed);
         friendship.setUploadTime(uploadTime);
-        logger.info("friendship: " + friendship);
-
+        logger.info("Friendship created: " + friendship);
         return friendship;
     }
+
 
     @Override
     public List<Friendship> findByFollowedUserId(int userId) {

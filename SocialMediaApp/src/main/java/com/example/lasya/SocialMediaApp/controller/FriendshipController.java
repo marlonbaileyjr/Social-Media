@@ -68,13 +68,17 @@ public class FriendshipController {
             logger.info("followerId: {}", followerId);
             logger.info("followedId: {}", followedId);
             logger.info("uploadTime: {}", uploadTime);
-            friendshipService.addFriendship(follower, followed, uploadTime);
-            return ResponseEntity.ok("Friendship created successfully");
+            boolean existingFriendship = friendshipService.existsByFollowerAndFollowed(follower, followed);
+            if (existingFriendship) {
+                logger.info("Friendship already exists");
+                return ResponseEntity.badRequest().body("Friendship already exists.");
+            } else {
+                friendshipService.addFriendship(follower, followed, uploadTime);
+                return ResponseEntity.ok("Friendship created successfully");
+            }
         } catch (ClassCastException e) {
-            // Handle the case where the data types do not match the expected ones.
             return ResponseEntity.badRequest().body("Invalid data types for followerId and followedId.");
         } catch (Exception e) {
-            // Handle other exceptions if necessary.
             logger.error("Error creating friendship", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred.");
         }

@@ -33,6 +33,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -132,13 +133,47 @@ public class PostController {
 
     @ApiOperation(value = "This API is used to get posts based on userId")
     @GetMapping(value = "/api/v1/posts/retrievePost/{userId}")
-    public List<Post> getPostsFromFriends(@PathVariable int userId) {
+    public List<Map<String, Object>> getPostsFromFriends(@PathVariable Integer userId) {
+        User user = userRepository.findById(userId).orElse(null);
+        logger.info("UserId: " + userId);
+        if (userId != null) {
+            List<Post> posts = postService.findPostsFromFriendsByUserId(userId);
+            logger.info("Posts: " + posts);
+            List<Map<String, Object>> postsFromFriends = new ArrayList<>();
+            for (Post post : posts) {
+                Map<String, Object> postInfo = new HashMap<>();
+                postInfo.put("userId", userId);
+                postInfo.put("postId", post.getPostId());
+                postInfo.put("caption", post.getCaption());
+                postInfo.put("uploadTime", post.getUploadTime());
+                postsFromFriends.add(postInfo);
+            }
+            return postsFromFriends;
+        }
+        throw new UserNotFoundException("User not found with userId: " + userId);
+    }
+
+    @ApiOperation(value = "This API is used to get posts that a user has posted based on the userId")
+    @GetMapping(value = "/api/v1/posts/getPosts/{userId}")
+    public List<Map<String, Object>> getPostsFromUser(@PathVariable int userId) {
         User user = userRepository.findById(userId).orElse(null);
         logger.info("UserId: " + userId);
         if (user != null) {
-            List<Post> posts = postService.findPostsFromFriendsByUserId(userId);
-            logger.info("Posts: " + posts);
-            return posts;
+            List<Post> posts = postService.findByUserUserId(userId);
+
+            // Create a list of custom Maps
+            List<Map<String, Object>> postsWithUserId = new ArrayList<>();
+            for (Post post : posts) {
+                Map<String, Object> postDetails = new HashMap<>();
+                postDetails.put("userId", userId);
+                postDetails.put("postId", post.getPostId());
+                postDetails.put("caption", post.getCaption());
+                postDetails.put("uploadTime", post.getUploadTime());
+                postsWithUserId.add(postDetails);
+            }
+
+            logger.info("Posts: " + postsWithUserId);
+            return postsWithUserId;
         }
         throw new UserNotFoundException("User not found with userId: " + userId);
     }
